@@ -1,0 +1,170 @@
+# Issues
+
+dispatch
+
+login
+logout
+make account
+recover password (and username)
+delete account
+validate username (form, length, and not used)
+validate password (not too easy to guess)
+captcha
+2 factor authorization
+"remember me"
+current_accoutn (is this an account?)
+profile in session
+call to persist profile change
+
+
+# Dispatch
+
+Wrap the dispatch call
+
+:- http_server(identity_dispatch(http_dispatch), [...]).
+
+a) add an option to the existing http_handler options list. Default is treat as guest. Provide a test predicate to locate all http_handlers without the option (using the default) because omitting one is a security hole.
+
+b) provide predicates similar to the http_handler/3, but named guest_handler/3, logged_in_handler/3,etc.
+
+c) provide a predicate you call in the body of the handler that throws if you're out of role, and a wrapper on http_dispatch/1 that handles it by producing a 302 page.
+
+d) have a directive that sets a path or a prefix as requiring role such and such.
+:- path_identity(/, guest).
+:- path_identity('/account', logged_in).
+:- path_identity('/admin', admin, [is_prefix(true)]).
+and 503 if can't determine role needed
+or have a default lo priority prefix / id of nobody
+
+
+# roles
+
+guest  - not logged in, no session
+not_activated - hasn't activated account
+no no - don't allow login until activated
+suspended - account suspended
+logged_in - user is better
+admin
+
+So - best to have logged in and not logged in and that's it.
+anything else is left to a separate pack
+
+we predefine guest and user.
+pages have 'page access roles', and guest and user.
+
+# sessions
+
+Should we start a session if they're logged in?
+Optionally.
+
+# packs
+
+ * one pack for basics
+ * one pack for signup
+ * one pack for advanced roles
+ * one pack for moderation
+ * one for OAuth
+
+# wizard
+
+It would be nice to have a wizard that sets it up.
+
+# email activation
+
+if we have email activation, we redirect to 'you haven't activated'
+page if you try to log in, and have a resend email button.
+If you activate, you're logged in at the same time
+
+# OAuth
+
+http://tutorials.jenkov.com/oauth2/overview.html
+
+esp. since I'm thinking of building a little wizard tool you can fire off and it helps you set the whole thing up.
+[ ] Add OAuth support. OAuth is blah blah.
+
+Check providers you wish to accept below.
+Note that this gives these providers information about who
+your users are and when they've logged on.
+Some of these providers have been bad actors in the past.
+"The authors of the program recommend you not use it unless
+you fully understand the implications and consequences of doing so.
+
+Maybe provide a link with more information about the concerns of OAuth.
+Stuff about Google tracking, Cambridge Analytica, etc.
+
+# Compliance
+
+comply with:
+COPPA   (assert yer over 18)
+EU GDPR
+this site uses cookies
+agree to TOS
+adult content warning
+
+# Locations
+
+Paths of specific pages (eg login) are set via settings.
+These settings are 
+
+# Username
+
+email is username
+username is not email, publicly used
+email, username, and changeable public display name
+
+make account page should have a make account form inclusion
+and inclusions for the needed items. All other items end up
+in profile.
+
+Username must be in restricted character set, min/max length limits,
+not 'admin' or similar, not 
+
+# REST
+
+Have to decide how that works.
+
+# 2 factor authorization
+
+definitely for later
+
+# Origin tracking
+
+login redirect destroys the original location. Some sites
+may want to know this info.
+For now, not going to worry about this.
+
+I'm going to use a search string to pass the redirect location
+Another approach is a cookie
+
+login form
+========
+t/f  show signup link   (auto generated link - memoized location of page with the username select widget, found)
+remember me check
+username
+pw
+Oauth provider buttons
+referrer sent as hidden field
+if the referrer was from same site
+place for errors
+
+test username when stigning up
+
+username works with OAuth
+force oauth and semi-public id
+
+===========
+Oh, yeah, I think the check box essentially lets the logging-in user state their preference between setting a "session cookie" or a "permanent cookie" as described here:
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies
+
+
+The session cookies last only as long as the browser stays open, and the "permanent" ones can persist between browser seesions, up to their expiration date.
+
+remember me should also have a security warning - it's inherently insecure.
+
+https://stackoverflow.com/questions/4773609/what-is-a-relatively-secure-way-of-using-a-login-cookie
+
+====
+
+Phone QR code scanning
+(alternative to 2FA suggested by ttmrichter, says it's common in China)
+
