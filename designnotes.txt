@@ -104,7 +104,9 @@ adult content warning
 # Locations
 
 Paths of specific pages (eg login) are set via settings.
-These settings are 
+These settings are
+
+Nooo.... use the path alias functionality
 
 # Username
 
@@ -168,3 +170,11 @@ https://stackoverflow.com/questions/4773609/what-is-a-relatively-secure-way-of-u
 Phone QR code scanning
 (alternative to 2FA suggested by ttmrichter, says it's common in China)
 
+
+
+how to redirect
+=======
+HTTP/1.1 302 Found
+Location: http://www.iana.org/domains/example/
+
+https://groups.google.com/forum/#!searchin/swi-prolog/status$20code|sort:date/swi-prolog/FwqMhRaxieg/l2uX7v4HCgAJ

@@ -105,6 +105,8 @@ request_pagerole(Request, PageRole) :-
     ;   PageRole = guest
     ).
 
+% TODO move this and make_login_cookie to their own module
+
 %!  token_uname(+Token:string, -Uname:text) is semidet
 %
 %   Succeeds returning the user name if the token is valid
@@ -140,7 +142,7 @@ get_crypto_key(Key) :-
             read(Stream, Key),
             close(Stream)
         ),
-        error(existance_error(source_sink, _), _),
+        error(existence_error(source_sink, _), _),
         (   create_crypto_key_file, % make sure we really wrote it
             get_crypto_key(Key),
             asserta(crypto_key(Key))
@@ -150,8 +152,11 @@ get_crypto_key(Key) :-
 create_crypto_key_file :-
     crypto_n_random_bytes(32, Key),
     setup_call_cleanup(
-        open('secret_identifier_key', write, Stream),
-        writeq(Stream, Key),
+        open('secret_identity_key', write, Stream),
+        (   writeq(Stream, Key),
+            write(Stream, '.'),
+            flush_output(Stream)
+        ),
         close(Stream)
     ).
 
