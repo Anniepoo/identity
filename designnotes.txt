@@ -16,6 +16,8 @@ current_accoutn (is this an account?)
 profile in session
 call to persist profile change
 
+"show password"
+Instead of 'stay signed in' (remember me) check, just set by default?
 
 # Dispatch
 
@@ -36,13 +38,24 @@ d) have a directive that sets a path or a prefix as requiring role such and such
 and 503 if can't determine role needed
 or have a default lo priority prefix / id of nobody
 
+# Sesssions
+
+There should be some way to get the current user name.
 
 # roles
 
-guest  - not logged in, no session
+guest  - not logged in
+user - logged in
+any other role is treated as user, and then we check if
+the hook identity:special_role(Uname, Role) succeeds
+
+
+
 not_activated - hasn't activated account
 no no - don't allow login until activated
 suspended - account suspended
+(maybe we need a 'reason' coming back from application programmer hook)
+
 logged_in - user is better
 admin
 

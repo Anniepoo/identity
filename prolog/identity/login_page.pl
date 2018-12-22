@@ -24,15 +24,16 @@
 :- use_module(library(http/http_wrapper)).
 :- use_module(library(http/http_path)).
 :- use_module(library(http/http_client)).
-:- use_module(library(crypto)).
-:- use_module(library(url)).
-
+:- use_module(library(identity/login_crypto)).
+:- use_module(library(identity/login_database)).
 
 :- http_handler(login(.), login_form_handler,
                 [id(login_form), identity(guest), priority(-100)]).
+:- http_handler(login(dologin), do_login_handler,
+                [id(dologin), identity(guest)]).
 
 % TODO fix these, they're stubs so I can test
-:- http_handler(login(dologin), do_login_handler, [id(dologin), identity(guest)]).
+
 :- http_handler(login(signup), login_form_handler, [id(signup), identity(guest)]).
 :- http_handler(login(forgot), login_form_handler, [id(forgot), identity(guest)]).
 
@@ -51,7 +52,6 @@ login_form(Contents) -->
               Contents
          )).
 
-% TODO export these
 %  TODO all the UX nits
 %  TODO validation
 login_hidden_referer -->
@@ -122,34 +122,37 @@ login_signup_link -->
 
 do_login_handler(Request) :-
         member(method(post), Request),
-        !,
-        % TODO handle errors so this doesn't fail
         http_read_data(Request, Data, []),
         member(referer=SuccessURL, Data),
         member(uname=UserName, Data),
         member(passwd=Password, Data),
-        authenticate_user(UserName, Password),
-        make_login_cookie(UserName, Cookie),
-        format('Status: 302 Found~n'),
-        format('Location: ~w~n', [SuccessURL]),
-        % session cookie, lives until browser exits
-        % however the cookie itself contains an expiry
-        % as well
-        format('Set-Cookie: login=~w; Path=/~n', [Cookie]),
-        format('Content-type: text/plain~n~n').
+        authenticate_user_status(UserName, Password, Status),
+        www_form_encode(Status, URLStatus),
+        (   Status = ok
+        ->
+            make_login_cookie(UserName, Cookie),
+            format('Status: 302 Found~n'),
+            format('Location: ~w~n', [SuccessURL]),
+            % session cookie, lives until browser exits
+            % however the cookie itself contains an expiry
+            % as well
+            format('Set-Cookie: login=~w; Path=/~n', [Cookie]),
+            format('Content-type: text/plain~n~n')
+        ;
+            http_absolute_location(login(.), LoginPage, []),
+            format('Status: 302 Found~n'),
+            format('Location: ~w?warn=~w~n', [LoginPage, URLStatus]),
+            format('Content-type: text/plain~n~n')
+        ).
+do_login_handler(_Request) :-
+      reply_html_page(
+          title('improper login'),
+          \improper_login).
 
-authenticate_user(annie, _).  % TODO stub for testing
-
-make_login_cookie(UName, Cookie) :-
-      www_form_encode(URLEncodedUName, UName),
-      get_time(Now),
-      Expires is floor(Now) + 86400,
-      identity:get_crypto_key(Key),
-      atomics_to_string([URLEncodedUName, "/", Expires], PlainText),
-      crypto_n_random_bytes(12, Nonce),
-      crypto_data_encrypt(PlainText, 'chacha20-poly1305',
-                          Key, Nonce, CipherText, []),
-      string_codes(CipherText, CipherTextCodes),
-      append(Nonce, CipherTextCodes, TokenList),
-      hex_bytes(Cookie, TokenList).
-
+improper_login -->
+      html(
+          div(class('improper-login'),
+              [
+                  h1('Sorry, login request ill formed'),
+                  a(href(location_by_id(home), 'Return to home'))
+              ])).
