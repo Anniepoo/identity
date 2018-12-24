@@ -60,7 +60,7 @@ login_hidden_referer -->
             memberchk(search(Search), Request),
             memberchk(redirect=Referer, Search)
         ;
-            http_absolute_location(home, Referer, [])  % TODO test this line
+            http_location_by_id(home, Referer)  % TODO test this line
         )  % TODO test that this uriencodes properly
     },
     html(input([type(hidden), name(referer), value(Referer)], [])).
@@ -139,7 +139,7 @@ do_login_handler(Request) :-
             format('Set-Cookie: login=~w; Path=/~n', [Cookie]),
             format('Content-type: text/plain~n~n')
         ;
-            http_absolute_location(login(.), LoginPage, []),
+            http_location_by_id(login_form, LoginPage),
             format('Status: 302 Found~n'),
             format('Location: ~w?warn=~w~n', [LoginPage, URLStatus]),
             format('Content-type: text/plain~n~n')

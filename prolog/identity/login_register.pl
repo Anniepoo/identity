@@ -9,6 +9,7 @@
 :- use_module(library(http/http_client)).
 :- use_module(library(http/http_path)).
 :- use_module(library(identity/login_crypto)).
+:- use_module(library(identity/login_database)).
 
 :- http_handler(login(register), register_form_handler, [id(register), identity(guest), priority(-100)]).
 
@@ -34,12 +35,17 @@ register_form -->
                  \login_user_name_field,
                  \login_password_field,
                  \login_password2_field,
-                 \login_submit
+                 \login_submit_register
              ])).
+
+login_submit_register -->
+    html(input([type(submit),
+                name(submit),
+                value('Register')])).
 
 login_email -->
     html(input([type(text),
-                name(uname),
+                name(email),
                 placeholder('Email'),
                 required])).
 
@@ -65,7 +71,7 @@ doregister_handler(Request) :-
         member(passwd2=Password, Data),
         member(email=Email, Data),
         (   member(referer=SendUserTo, Data) ;
-            http_absolute_location(home, SendUserTo, []) % TEST this
+            http_location_by_id(home, SendUserTo) % TEST this
         ),
         add_user(UserName,
                  Password,
@@ -82,12 +88,9 @@ doregister_handler(Request) :-
             % however the cookie itself contains an expiry
             % as well
             format('Set-Cookie: login=~w; Path=/~n', [Cookie]),
-            format('Content-type: text/plain~n~n'),
-            format('Status: 302 Found~n'),
-            format('Location: ~w~n', [SendUserTo]),
             format('Content-type: text/plain~n~n')
         ;
-            http_absolute_location(register, RegisterPage, []),
+            http_location_by_id(register, RegisterPage),
             format('Status: 302 Found~n'),
             format('Location: ~w?warn=~w~n', [RegisterPage, URLStatus]),
             format('Content-type: text/plain~n~n')

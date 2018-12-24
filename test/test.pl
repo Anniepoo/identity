@@ -26,7 +26,10 @@ root_handler(_Request) :-
           a(href(location_by_id(secret)), 'link to secret')).
 
 secret_handler(_Request) :-
+      current_user(User),
       reply_html_page(
           h1('Secret Page'),
-          a(href(location_by_id(home)), 'link to home page')).
+          [a(href(location_by_id(home)), 'link to home page'),
+           a(href(location_by_id(logout)), 'Log Out'),
+           p(User)]).
 

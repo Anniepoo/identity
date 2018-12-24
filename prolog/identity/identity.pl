@@ -1,5 +1,6 @@
 :- module(identity, [
-              identity_dispatch/2
+              identity_dispatch/2,
+              current_user/1
           ]).
 /** <module> identity - pack to manage user identities on the SWI-Prolog web framework.
  *
@@ -17,6 +18,7 @@ http:location(login, root(login), [priority(-100)]).
 
 :- use_module(library(identity/login_crypto)).
 :- ensure_loaded(library(identity/login_page)).
+:- ensure_loaded(library(identity/logout)).
 :- use_module(library(identity/login_database), [user_has_role/2]).
 
 :- meta_predicate identity_dispatch(1, +).
@@ -65,7 +67,8 @@ identity_dispatch_role(user, OriginalDispatch, Request) :-
     memberchk(cookie(Cookies), Request),
     memberchk(login=Token, Cookies),
     (   token_uname(Token, Uname)
-    ->  call(OriginalDispatch, [identity(Uname) |Request])
+    ->  b_setval(current_user, Uname),
+        call(OriginalDispatch, [identity(Uname) |Request])
     ;   redirect_to_login(Request)
     ),
     !.
@@ -77,7 +80,9 @@ identity_dispatch_role(Role, OriginalDispatch, Request) :-
     memberchk(login=Token, Cookies),
     (   token_uname(Token, Uname),  % TODO make this go somewhere nice
         user_has_role(Uname, Role)
-    ->  call(OriginalDispatch, [identity(Uname) |Request]),
+    ->  b_setval(current_user, Uname),
+        call(OriginalDispatch, [identity(Uname) |Request])
+    ;
         redirect_to_login(Request)
     ),
     !.
@@ -87,7 +92,7 @@ identity_dispatch_role(Role, OriginalDispatch, Request) :-
 redirect_to_login(Request) :-
     memberchk(path(RedirPath), Request), % place to return to
     www_form_encode(RedirPath, URIEncRedirPath),
-    http_absolute_location(login(.), Path, []),
+    http_location_by_id(login_form, Path),
     atomic_list_concat([Path, '?redirect=', URIEncRedirPath], URL),
     http_redirect(moved_temporary,
                   URL,
@@ -105,6 +110,10 @@ request_pagerole(Request, PageRole) :-
     ).
 
 
+current_user(UName) :-
+    catch(b_getval(current_user, UName),
+          error(existence_error(variable, current_user), _),
+          UName = guest).
 
 
 
