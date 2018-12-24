@@ -6,7 +6,7 @@
           login_remember_me_check//0,
           login_submit//0,
           login_warning//0,
-          login_signup_link//0]).
+          login_register_link//0]).
 /** <Module> Login page
 *
 * The page that presents a login form for the identity pack.
@@ -26,6 +26,7 @@
 :- use_module(library(http/http_client)).
 :- use_module(library(identity/login_crypto)).
 :- use_module(library(identity/login_database)).
+:- ensure_loaded(library(identity/login_register)).
 
 :- http_handler(login(.), login_form_handler,
                 [id(login_form), identity(guest), priority(-100)]).
@@ -34,7 +35,6 @@
 
 % TODO fix these, they're stubs so I can test
 
-:- http_handler(login(signup), login_form_handler, [id(signup), identity(guest)]).
 :- http_handler(login(forgot), login_form_handler, [id(forgot), identity(guest)]).
 
 
@@ -60,7 +60,7 @@ login_hidden_referer -->
             memberchk(search(Search), Request),
             memberchk(redirect=Referer, Search)
         ;
-            http_absolute_location(root(.), Referer, [])
+            http_absolute_location(home, Referer, [])  % TODO test this line
         )  % TODO test that this uriencodes properly
     },
     html(input([type(hidden), name(referer), value(Referer)], [])).
@@ -102,7 +102,7 @@ login_forgot_password -->
 login_form_page -->
     html(\login_form([
               \login_hidden_referer,
-              div(\login_signup_link),
+              div(\login_register_link),
               \login_warning,
               div([label(for(uname), 'User Name:'), \login_user_name_field]),
               div([label(for(passwd), 'Password:'), \login_password_field]),
@@ -111,8 +111,8 @@ login_form_page -->
               div(\login_submit)
           ])).
 
-login_signup_link -->
-    html(a(href(location_by_id(signup)),
+login_register_link -->
+    html(a(href(location_by_id(register)),
                     'Register')).
 
 		 /*******************************

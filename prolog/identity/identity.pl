@@ -38,7 +38,9 @@ http:location(login, root(login), [priority(-100)]).
 %
 %   If a visitor requests a page to which they do not have access,
 %   a 302 Found response will be generated. This 302 will redirect
-%   to the abstract location login(.)
+%   to the abstract location login(.) if they need to log in, and
+%   to an error page if they're logged in but don't have the right role.
+%   TODO and what if they're not logged in but it's not a user page?
 %
 %   If the Referer header is present, and on the same domain, then
 %   a message about 'you must be logged in to access that page' is
