@@ -22,20 +22,20 @@
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/html_write)).
 :- use_module(library(http/http_wrapper)).
-:- use_module(library(http/http_path)).
-:- use_module(library(http/http_client)).
+:- use_module(library(http/http_parameters)).
+:- use_module(library(http/http_session)).
 :- use_module(library(identity/login_crypto)).
 :- use_module(library(identity/login_database)).
 :- ensure_loaded(library(identity/login_register)).
 
 :- http_handler(login(.), login_form_handler,
-                [id(login_form), identity(guest), priority(-100)]).
+                [id(login_form), priority(-100)]).
 :- http_handler(login(dologin), do_login_handler,
-                [id(dologin), identity(guest)]).
+                [id(dologin)]).
 
 % TODO fix these, they're stubs so I can test
 
-:- http_handler(login(forgot), login_form_handler, [id(forgot), identity(guest)]).
+:- http_handler(login(forgot), login_form_handler, [id(forgot)]).
 
 
 login_form_handler(_Request) :-
@@ -121,33 +121,48 @@ login_register_link -->
 
 
 do_login_handler(Request) :-
-        member(method(post), Request),
-        http_read_data(Request, Data, []),
-        member(referer=SuccessURL, Data),
-        member(uname=UserName, Data),
-        member(passwd=Password, Data),
+        http_parameters(
+            Request,
+            [ referer(SuccessURL, [default(root(.))]), % is this default ok?
+              uname(UserName, []),
+              passwd(Password, [])
+            ]),
         authenticate_user_status(UserName, Password, Status),
-        www_form_encode(Status, URLStatus),
-        (   Status = ok
-        ->
-            make_login_cookie(UserName, Cookie),
-            format('Status: 302 Found~n'),
+        do_actual_login(Status, SuccessURL, UserName, Request).
+do_login_handler(_Request) :-
+      reply_html_page(
+          title('improper login'),
+          \improper_login).
+
+do_actual_login(ok, SuccessURL, UserName, Request) :-
+      http_open_session(_SessionId, []),
+      http_session_assert(user(UserName)),
+      http_redirect(see_other, SuccessURL, Request).
+        /*  TODO - make the 'remember me' cookie if remember me checked
+            make_login_cookie(UserName, Cookie), % TODO now only send cookie if
+            format('Status: 302 Found~n'),       %
             format('Location: ~w~n', [SuccessURL]),
             % session cookie, lives until browser exits
             % however the cookie itself contains an expiry
             % as well
             format('Set-Cookie: login=~w; Path=/~n', [Cookie]),
             format('Content-type: text/plain~n~n')
-        ;
+        */
+do_actual_login(Status, SuccessURL, _UserName, Request) :-
+      Status \= ok,
+      http_link_to_id(login_form,
+                      [
+                          warn(Status),
+                          referer(SuccessURL)
+                      ],
+                      HREF),
+      http_redirect(see_other, HREF, Request).
+
+        /*
             http_location_by_id(login_form, LoginPage),
             format('Status: 302 Found~n'),
             format('Location: ~w?warn=~w~n', [LoginPage, URLStatus]),
-            format('Content-type: text/plain~n~n')
-        ).
-do_login_handler(_Request) :-
-      reply_html_page(
-          title('improper login'),
-          \improper_login).
+            format('Content-type: text/plain~n~n')  */
 
 improper_login -->
       html(

@@ -11,7 +11,7 @@
 :- use_module(library(identity/login_crypto)).
 :- use_module(library(identity/login_database)).
 
-:- http_handler(login(register), register_form_handler, [id(register), identity(guest), priority(-100)]).
+:- http_handler(login(register), register_form_handler, [id(register), priority(-100)]).
 
 
 register_form_handler(_Request) :-

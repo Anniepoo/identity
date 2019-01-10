@@ -9,16 +9,20 @@
 :- use_module(library(http/thread_httpd)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/html_write)).
+:- use_module(library(http/http_session)).
 
 user:file_search_path(library, '../prolog').
 
 :- use_module(library(identity/identity)).
 
 go :-
-      http_server(identity_dispatch(http_dispatch), [port(5000)]).
+    http_set_session_options(
+        [ create(noauto)
+        ]),
+    http_server(http_dispatch, [port(5000)]).
 
-:- http_handler(root(.), root_handler, [id(home), identity(guest)]).
-:- http_handler(root(secret), secret_handler, [id(secret), identity(user)]).
+:- http_handler(root(.), root_handler, [id(home)]).
+:- http_handler(root(secret), secret_handler, [id(secret), role(user)]).
 
 root_handler(_Request) :-
       reply_html_page(
