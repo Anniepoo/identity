@@ -1,5 +1,4 @@
 :- module(identity, [
-              identity_dispatch/2,
               current_user/1
           ]).
 /** <module> identity - pack to manage user identities on the SWI-Prolog web framework.
@@ -7,11 +6,13 @@
  *  this pack depends on OpenSSL1.1.0 or greater
  */
 
+:- use_module(library(http/thread_httpd)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_path)).
 :- use_module(library(url)).
 :- use_module(library(http/http_parameters)).
 :- use_module(library(http/http_session)).
+:- use_module(library(http/html_write)).
 
 :- multifile http:location/3.
 :- dynamic   http:location/3.
@@ -113,9 +114,8 @@ request_pagerole(Request, PageRole) :-
 
 
 current_user(UName) :-
-    catch(b_getval(current_user, UName),
-          error(existence_error(variable, current_user), _),
-          UName = guest).
+    http_session_data(user(UName)).
+current_user(guest).
 
 		 /*******************************
 		 *            USER DATA		*
@@ -125,7 +125,8 @@ current_user(UName) :-
 %!  valid_passwd(+User, +Passwd) is semidet.
 %
 %   True if Passwd is the correct password for User.
-
+% TODO subsumed by user/2
+%
 valid_passwd(User, Passwd) :-
     user(User, password(Passwd)).
 
@@ -137,7 +138,7 @@ valid_passwd(User, Passwd) :-
 
 user(jan, password(geheim)).
 user(jan, role(trusted)).
-
+user(_, role(user)).   % everyone logged in is a user
 user(bob, password(secret)).
 
 		 /*******************************
@@ -180,7 +181,7 @@ rbac(Request, Request, Options) :-
             throw(http_reply(forbidden(Path), [], [no_role(User, Role)]))
         )
     ;   memberchk(request_uri(Return), Request),
-        http_link_to_id(login,
+        http_link_to_id(login_form,
                         [ reason('The requested location requires login'),
                           return_to(Return)
                         ], HREF),

@@ -7,8 +7,8 @@
 
 authenticate_user_status(annie, _, ok).  % TODO stub for testing
 authenticate_user_status(bob, _, 'Bob is a chowderhead').
-authenticate_user_status(UName, Password, Email) :-
-    user(UName, Password, Email).
+authenticate_user_status(UName, Password, ok) :-
+    user(UName, Password, _).
 authenticate_user_status(_, _, 'no idea who that is').
 
 :-multifile identity:special_role/2.
