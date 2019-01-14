@@ -1,69 +1,52 @@
 :- module(identity, [
-              current_user/1
+              current_user/1,   % reexported
+              current_user//0   % reexported
           ]).
+
 /** <module> identity - pack to manage user identities on the SWI-Prolog web framework.
  *
  *  this pack depends on OpenSSL1.1.0 or greater
  */
 
-:- use_module(library(http/thread_httpd)).
 :- use_module(library(http/http_dispatch)).
-:- use_module(library(http/http_path)).
-:- use_module(library(url)).
-:- use_module(library(http/http_parameters)).
-:- use_module(library(http/http_session)).
 :- use_module(library(http/html_write)).
+:- use_module(library(http/http_session)).
 
 :- multifile http:location/3.
 :- dynamic   http:location/3.
 
 http:location(login, root(login), [priority(-100)]).
 
-:- use_module(library(identity/login_crypto)).
 :- ensure_loaded(library(identity/login_page)).
 :- ensure_loaded(library(identity/logout)).
-:- use_module(library(identity/login_database), [user_has_role/2]).
-
-current_user(UName) :-
-    http_session_data(user(UName)).
-current_user(guest).
-
-		 /*******************************
-		 *            USER DATA		*
-		 *******************************/
-
-
-%!  user(?User, ?Property) is nondet.
-%
-%   True when Property is a property of user. In a real application this
-%   should of course be  a  proper   persistent  database  and passwords
-%   should be properly hashed.
-
-user(jan, password(geheim)).
-user(jan, role(trusted)).
-user(_, role(user)).   % everyone logged in is a user
-user(bob, password(secret)).
+:- reexport(library(identity/login_database), [current_user/1,
+                                              current_user//0]).
+:- use_module(library(identity/login_database), [user_property/2]).
 
 		 /*******************************
 		 *            EXPAND		*
 		 *******************************/
 
-:- http_request_expansion(user, 100).
-:- http_request_expansion(rbac, 200).
+% order is important, need user field in second
+:- http_request_expansion(user_expand, 100).
+:- http_request_expansion(role_based_authorization_expand, 200).
 
-%!  user(+Request0, -Request, +Options) is semidet.
+%!  user_expand(+Request0, -Request, +Options) is semidet.
 %
 %   HTTP request rewriter that figures out whether someone is logged in.
 %   using this technique we can use   different  techniques to establish
 %   the logged in status.
+%
+%   If the user is logged in, we add user(User) to the request
+%
 
-user(Request0, Request, _Options) :-
+user_expand(Request0, Request, _Options) :-
     http_in_session(_),
     http_session_data(user(User)),
     Request = [user(User)|Request0].
 
 
-%!  rbac(+Request0, -Request, +Options) is semidet.
+%!  role_based_authorization_expand((+Request0, -Request, +Options) is semidet.
 %
 %   Establish whether the user  may  proceed   if  the  handler  options
 %   contain a term role(Role).  Acts as follows:
@@ -75,10 +58,10 @@ user(Request0, Request, _Options) :-
 %          arbitrary context for the error page.
 %     2. Otherwise redirect to the login page
 
-rbac(Request, Request, Options) :-
+role_based_authorization_expand(Request, Request, Options) :-
     memberchk(role(Role), Options),
     (   memberchk(user(User), Request)
-    ->  (   user(User, role(Role))
+    ->  (   user_property(User, role(Role))
         ->  true
         ;   memberchk(path(Path), Request),
             throw(http_reply(forbidden(Path), [], [no_role(User, Role)]))

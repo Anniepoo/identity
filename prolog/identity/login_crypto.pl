@@ -4,7 +4,10 @@
           ]).
 /** <module> Tools for crypto work on login cookies
  *
+ *  I think these are now dead
+ *
  */
+
 
 %!  token_uname(+Token:string, -Uname:text) is semidet
 %
