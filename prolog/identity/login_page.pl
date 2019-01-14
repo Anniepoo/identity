@@ -6,7 +6,8 @@
           login_remember_me_check//0,
           login_submit//0,
           login_warning//0,
-          login_register_link//0]).
+          login_register_link//0,
+          do_actual_login/4]).
 /** <Module> Login page
 *
 * The page that presents a login form for the identity pack.
@@ -134,6 +135,7 @@ do_login_handler(_Request) :-
           title('improper login'),
           \improper_login).
 
+% TODO this is public, pldoc it
 do_actual_login(ok, SuccessURL, UserName, Request) :-
       http_open_session(_SessionId, []),
       http_session_assert(user(UserName)),

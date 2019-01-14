@@ -77,10 +77,13 @@ doregister_handler(Request) :-
                  Password,
                  Email
                  ),
+        do_actual_login(ok, SendUserTo, UserName, Request).
+/*
         Status = ok,  %  TODO make this work probably with a throw
         www_form_encode(Status, URLStatus),
         (   Status = ok
         ->
+
             make_login_cookie(UserName, Cookie),
             format('Status: 302 Found~n'),
             format('Location: ~w~n', [SendUserTo]),
@@ -95,6 +98,6 @@ doregister_handler(Request) :-
             format('Location: ~w?warn=~w~n', [RegisterPage, URLStatus]),
             format('Content-type: text/plain~n~n')
         ).
-
+*/
 
 

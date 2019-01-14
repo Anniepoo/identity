@@ -14,8 +14,8 @@ logout_handler(Request) :-
     http_location_by_id(home, Redirect),
     http_parameters(
         Request,
-        [ referer(Return, [Redirect])   % TODO check this
+        [ referer(Return, [default(Redirect)])   % TODO check this
         ]),
     http_session_retractall(user(_User)),
     http_redirect(see_other, Return, Request).
-% TODO expire remmember_me cookie on logout
+% TODO expire remember_me cookie on logout
