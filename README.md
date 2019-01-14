@@ -123,3 +123,65 @@ TODO - explain how to wire up the database.
 
 
 ## Use with 'stock' authentication
+
+## TODO
+
+ * add to README
+ * clean up all the redundancy in `login_database`, use `user_property`
+ * make real persist API 
+ * make default persist API
+ * add real integration tests
+ * add email activation
+ * add styling support
+ * add OAuth
+ * Add  checks on uname/pw size
+ * Add pw reset email
+ * document all
+ * Add a meta-inclusion that adds unauthorized class to link if user not authorized
+ * Add a pengine endpoint that says yes/no an endpoint is authorized
+ * Try overriding login, registration, and forbidden pages
+ * Move the error page at bottom of identity to its own module
+ * make rest endpoints work, or at least test that they do
+ * make sure pengines work
+ * I think login_crypto is dead, remove
+ * handle username is email
+ * handle registration invalid (eg dup email)
+ * make remember me cookie work
+ * expire remember me if user logs out
+ * test remember me against changing accounts
+ * handle mismatched passwords in registration
+ * Gravatars
+ * CAPTCHA
+ * validate uname char set to avoid faking (display non ascii in color?)
+ * guests w/ sessions can get swish svg-atars
+ * maybe sep. pack with svg-atars and settings page
+ * password strength meter
+ * look at doc_server for undoced publics and bad format
+
+
+
+# other web design patterns
+
+ * more general identity - profiles, gravatar, zwinkies, gamification rating
+ * Rails scaffold 
+ * flash pattern from rails
+ * Hasura like 'watch this thing' against a knowledgebase
+ * Site wide maintainence
+ * blog
+ * CMS
+ * store
+ * map roi
+ * threading, up/down voting, moderators, tagging, rate-limits, quote-replying, retweeting, crossposting. 
+ 
+
+
+
+
+
+ 
+
+
+ 
+
+
+

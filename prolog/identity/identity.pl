@@ -46,7 +46,7 @@ user_expand(Request0, Request, _Options) :-
     Request = [user(User)|Request0].
 
 
-%!  role_based_authorization_expand((+Request0, -Request, +Options) is semidet.
+%!  role_based_authorization_expand(+Request0, -Request, +Options) is semidet
 %
 %   Establish whether the user  may  proceed   if  the  handler  options
 %   contain a term role(Role).  Acts as follows:
@@ -109,6 +109,6 @@ html(p('The user ~p does not have role ~p'-[User,Role])).
 % TODO move ERROR section to it's own module and update README.md
 %
 % TODO make rest endpoints work, or at least test that they do
-
+% make sure pengines work
 
 

@@ -136,6 +136,16 @@ do_login_handler(_Request) :-
           \improper_login).
 
 % TODO this is public, pldoc it
+% TODO Let Jan know - throwing is awkward for making links that
+% are disabled/invisible if the user can't access them.
+%
+%  TODO check that this can be overridden
+%
+% TODO move ERROR section to it's own module and update README.md
+%
+% TODO make rest endpoints work, or at least test that they do
+% make sure pengines work
+
 do_actual_login(ok, SuccessURL, UserName, Request) :-
       http_open_session(_SessionId, []),
       http_session_assert(user(UserName)),
