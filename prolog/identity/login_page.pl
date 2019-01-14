@@ -35,12 +35,12 @@
                 [id(dologin)]).
 
 % TODO fix these, they're stubs so I can test
-
+% TODO make 'forgot password'
 :- http_handler(login(forgot), login_form_handler, [id(forgot)]).
 
 
 login_form_handler(_Request) :-
-      reply_html_page(
+      reply_html_page( % TODO decide how styling should happen
           title('Login Form Page'),
           \login_form_page).
 
@@ -159,12 +159,6 @@ do_actual_login(Status, SuccessURL, _UserName, Request) :-
                       ],
                       HREF),
       http_redirect(see_other, HREF, Request).
-
-        /*
-            http_location_by_id(login_form, LoginPage),
-            format('Status: 302 Found~n'),
-            format('Location: ~w?warn=~w~n', [LoginPage, URLStatus]),
-            format('Content-type: text/plain~n~n')  */
 
 improper_login -->
       html(

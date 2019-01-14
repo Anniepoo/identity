@@ -101,9 +101,14 @@ forbidden_reason(Context) -->
 html(p('The user ~p does not have role ~p'-[User,Role])).
 
 
-
-
-
+% TODO Let Jan know - throwing is awkward for making links that
+% are disabled/invisible if the user can't access them.
+%
+%  TODO check that this can be overridden
+%
+% TODO move ERROR section to it's own module and update README.md
+%
+% TODO make rest endpoints work, or at least test that they do
 
 
 
