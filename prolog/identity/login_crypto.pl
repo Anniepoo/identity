@@ -1,13 +1,21 @@
 :- module(login_crypto, [
               token_uname/2,
-              make_login_cookie/2
+              make_login_cookie/2,
+              password_hash/2
           ]).
 /** <module> Tools for crypto work on login cookies
  *
- *  I think these are now dead
+ *  I think token_uname and make_login_cookie are
+  * now dead, but will be needed for remember_me
  *
  */
+:- use_module(library(crypto)).
 
+%!  password_hash(+Plain:string, -Hash:atom) is det
+%
+%   Hash a password
+password_hash(Plain, Hash) :-
+    crypto_password_hash(Plain, Hash).
 
 %!  token_uname(+Token:string, -Uname:text) is semidet
 %

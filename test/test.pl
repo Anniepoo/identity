@@ -14,8 +14,10 @@
 user:file_search_path(library, '../prolog').
 
 :- use_module(library(identity/identity)).
+:- use_module(library(identity/login_database), [use_default_db/0]).
 
 go :-
+    use_default_db,
     http_set_session_options(
         [ create(noauto)
         ]),

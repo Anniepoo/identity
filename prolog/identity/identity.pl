@@ -103,6 +103,7 @@ html(p('The user ~p does not have role ~p'-[User,Role])).
 
 % TODO Let Jan know - throwing is awkward for making links that
 % are disabled/invisible if the user can't access them.
+% (not really Jan's problem)
 %
 %  TODO check that this can be overridden
 %

@@ -157,6 +157,10 @@ TODO - explain how to wire up the database.
  * maybe sep. pack with svg-atars and settings page
  * password strength meter
  * look at doc_server for undoced publics and bad format
+ * move all strings in default pages to some strings override predicate
+ * prevent adding multiple users
+ * add logging of various events
+ * add debug/3 calls
 
 
 

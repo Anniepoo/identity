@@ -128,7 +128,7 @@ do_login_handler(Request) :-
               uname(UserName, []),
               passwd(Password, [])
             ]),
-        authenticate_user_status(UserName, Password, Status),
+        authenticate_user(UserName, Password, Status),
         do_actual_login(Status, SuccessURL, UserName, Request).
 do_login_handler(_Request) :-
       reply_html_page(
