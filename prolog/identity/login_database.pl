@@ -17,8 +17,8 @@
 :- use_module(library(identity/login_crypto)).
 
 authenticate_user(UName, Password, ok) :-
-    password_hash(Password, Hash),
     user_property(UName, password_hash(Hash)),
+    password_hash(Password, Hash), % test requires both ground
     !.
 authenticate_user(UName, _, 'Invalid Password') :-
     user_property(UName, _),

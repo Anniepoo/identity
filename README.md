@@ -127,9 +127,7 @@ TODO - explain how to wire up the database.
 ## TODO
 
  * add to README
- * clean up all the redundancy in `login_database`, use `user_property`
- * make real persist API 
- * make default persist API
+ * BUG - click the secret link on the homepage. Login page comes up. After logging in, you don't go to the secret, you go home.
  * add real integration tests
  * add email activation
  * add styling support
@@ -162,6 +160,11 @@ TODO - explain how to wire up the database.
  * add logging of various events
  * add debug/3 calls
 
+# DONE
+
+ * clean up all the redundancy in `login_database`, use `user_property`
+ * make real persist API 
+ * make default persist API
 
 
 # other web design patterns
