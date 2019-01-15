@@ -127,9 +127,16 @@ TODO - explain how to wire up the database.
 ## TODO
 
  * add to README
+      * list of everything you can configure - pages, strings, behavior
+ * Design how configuration works. Don't just let it happen.
+      * global settings
+      * how initialization works  (lazy?, application programmer calls?)
+      * strings
+      * page layout
  * BUG - click the secret link on the homepage. Login page comes up. After logging in, you don't go to the secret, you go home.
  * add real integration tests
  * add email activation
+ * add debug email - just prints debug message
  * add styling support
  * add OAuth
  * Add  checks on uname/pw size
@@ -141,7 +148,7 @@ TODO - explain how to wire up the database.
  * Move the error page at bottom of identity to its own module
  * make rest endpoints work, or at least test that they do
  * make sure pengines work
- * I think login_crypto is dead, remove
+ * if you don't use some stuff in login_crypto for remember_me, remove it
  * handle username is email
  * handle registration invalid (eg dup email)
  * make remember me cookie work
