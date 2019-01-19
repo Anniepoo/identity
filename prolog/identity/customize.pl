@@ -9,6 +9,7 @@
  */
 
 :- use_module(library(http/html_write)).
+:- use_module(library(settings)).
 
 		 /*******************************
 		 *       Localization		*
@@ -25,3 +26,7 @@ local(X, X).
 		 /*******************************
 		 *           SETTINGS           *
 		 *******************************/
+:- setting(identity:style, atom, default,
+           "Name of the style to appy to identity pages").
+:- setting(identity:require_activation_email, boolean, false,
+           "true = require activation email, false = not required").

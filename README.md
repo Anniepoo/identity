@@ -129,7 +129,7 @@ TODO - explain how to wire up the database.
  * add to README
       * list of everything you can configure - pages, strings, behavior
  * Design how configuration works. Don't just let it happen.
-      * global settings
+      * global settings - use settings library
       * how initialization works  (lazy?, application programmer calls?) - choose ap programmer
       * strings - local//1 works
       * page layout - override handler

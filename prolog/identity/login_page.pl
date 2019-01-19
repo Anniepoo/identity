@@ -41,7 +41,9 @@
 
 
 login_form_handler(_Request) :-
-      reply_html_page( % TODO decide how styling should happen
+      setting(identity:style, Style),
+      reply_html_page(
+          Style,
           title(\local('Login Form')),
           \login_form_page).
 
@@ -137,7 +139,9 @@ do_login_handler(Request) :-
         authenticate_user(UserName, Password, Status),
         do_actual_login(Status, SuccessURL, UserName, Request).
 do_login_handler(_Request) :-
+      setting(identity:sytle, Style),
       reply_html_page(
+          Style,
           title(\local('improper login')),
           \improper_login).
 

@@ -16,7 +16,9 @@
 
 
 register_form_handler(_Request) :-
+    setting(identity:style, Style),
     reply_html_page(
+        Style,
         title(\local('Register')),
         \register_body).
 

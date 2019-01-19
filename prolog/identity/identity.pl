@@ -18,6 +18,7 @@ http:location(login, root(login), [priority(-100)]).
 :- ensure_loaded(library(identity/customize)).
 :- ensure_loaded(library(identity/login_page)).
 :- ensure_loaded(library(identity/logout)).
+:- ensure_loaded(library(identity/login_email)).
 :- use_module(library(identity/login_database), [user_property/2]).
 
 		 /*******************************
@@ -59,12 +60,16 @@ role_based_authorization_expand(Request, Request, Options) :-
     (   memberchk(user(User), Request)
     ->  (   user_property(User, role(Role))
         ->  true
+        ->  user_property(User, role(needs_activation)),
+            memberchk(path(Path), Request),
+            throw(http_reply(forbidden(Path), [], [needs_activation(User)]))
         ;   memberchk(path(Path), Request),
             throw(http_reply(forbidden(Path), [], [no_role(User, Role)]))
         )
     ;   memberchk(request_uri(Return), Request),
+        local('The requested location requires login', Reason),
         http_link_to_id(login_form,
-                        [ reason('The requested location requires login'),
+                        [ reason(Reason),
                           return_to(Return)
                         ], HREF),
         http_redirect(see_other, HREF, Request)
@@ -78,15 +83,17 @@ role_based_authorization_expand(Request, Request, Options) :-
 :- multifile
     http:status_page/3.
 
+% TODO add activation page
+%
 %!  http:status_page(+Term, +Context, -HTML)
 %
 %   Provide a custom error page for the forbidden action.
 
 http:status_page(forbidden(Path), Context, HTML) :-
-    phrase(page([ title('Access denied')
+    phrase(page([ title(\local('Access denied'))
                 ],
-                [ h1('Access denied'),
-                  p(['You do not have sufficient privileges to access ',
+                [ h1(\local('Access denied')),
+                  p([\local('You do not have sufficient privileges to access '),
                      Path]),
                   \forbidden_reason(Context)
                 ]),
@@ -94,7 +101,12 @@ http:status_page(forbidden(Path), Context, HTML) :-
 
 forbidden_reason(Context) -->
     { memberchk(no_role(User, Role), Context) },
-html(p('The user ~p does not have role ~p'-[User,Role])).
+html(p(\local('The user ~p does not have role ~p'-[User,Role]))).
+forbidden_reason(Context) -->
+    { memberchk(needs_activation(User), Context) },
+html([p(\local('The user ~p needs to activate their account'-[User])),
+     a(href(location_by_id(login(resend/User))), \local('Resend activation email'))]).
+
 
 
 % TODO Let Jan know - throwing is awkward for making links that

@@ -20,7 +20,8 @@ user:file_search_path(library, '../prolog').
 go :-
     use_default_db,
     http_set_session_options(
-        [ create(noauto)
+        [ create(noauto),
+          timeout(1800)  % half hour sessions
         ]),
     http_server(http_dispatch, [port(5000)]).
 

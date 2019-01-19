@@ -17,6 +17,7 @@
 :- use_module(library(http/html_write)).
 :- use_module(library(identity/login_crypto)).
 :- use_module(library(identity/customize)).
+:- use_module(library(identity/login_email)).
 
 authenticate_user(UName, Password, ok) :-
     user_property(UName, password_hash(Hash)),
@@ -36,7 +37,14 @@ add_user(UName, Password, Email) :-
     password_hash(Password, Hash),
     set_user_property(UName, password_hash(Hash)),
     set_user_property(UName, email(Email)),
-    assert_user_property(UName, role(user)).
+    setting(identity:require_activation_email, ActivateEmail),
+    (   ActivateEmail = true
+    ->  assert_user_property(UName, role(needs_activation)),
+        uuid(Key),
+        assert_user_property(UName, activation_key(Key)),
+        send_activation_email(UName, Email, Key)
+    ;   assert_user_property(UName, role(user))
+    ).
 
 current_user(UName) :-
     http_session_data(user(UName)).
