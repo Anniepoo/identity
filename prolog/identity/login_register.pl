@@ -10,18 +10,19 @@
 :- use_module(library(http/http_path)).
 :- use_module(library(identity/login_crypto)).
 :- use_module(library(identity/login_database)).
+:- use_module(library(identity/customize)).
 
 :- http_handler(login(register), register_form_handler, [id(register), priority(-100)]).
 
 
 register_form_handler(_Request) :-
     reply_html_page(
-        title('Register'),
+        title(\local('Register')),
         \register_body).
 
 register_body -->
     html(div([
-             h1('Register'),
+             h1(\local('Register')),
              div(\register_form)
              ])).
 
@@ -44,15 +45,17 @@ login_submit_register -->
                 value('Register')])).
 
 login_email -->
+    { local('Email', Email) },
     html(input([type(text),
                 name(email),
-                placeholder('Email'),
+                placeholder(Email),
                 required])).
 
 login_password2_field -->
+    { local('Repeat Password', RP) },
     html(input([type(password),
                 name(passwd2),
-                placeholder('Repeat password'),
+                placeholder(RP),
                required])).
 
 

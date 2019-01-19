@@ -11,19 +11,23 @@
           retractall_user_property/2
           ]).
 % TODO document all 'known' properties
+% eg password_hash, role
 %
 :- use_module(library(http/http_session)).
 :- use_module(library(http/html_write)).
 :- use_module(library(identity/login_crypto)).
+:- use_module(library(identity/customize)).
 
 authenticate_user(UName, Password, ok) :-
     user_property(UName, password_hash(Hash)),
     password_hash(Password, Hash), % test requires both ground
     !.
-authenticate_user(UName, _, 'Invalid Password') :-
+authenticate_user(UName, _, IUOP) :-
+    local('Invalid user or password', IUOP), % for security, same as next
     user_property(UName, _),
     !.
-authenticate_user(_, _, 'No Such User').
+authenticate_user(_, _, IUOP) :-
+    local('Invalid user or password', IUOP).
 
 % TODO this can fail - probably not handled
 % % TODO decide - should it throw?

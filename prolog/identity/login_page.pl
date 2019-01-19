@@ -28,6 +28,7 @@
 :- use_module(library(identity/login_crypto)).
 :- use_module(library(identity/login_database)).
 :- ensure_loaded(library(identity/login_register)).
+:- use_module(library(identity/customize)).
 
 :- http_handler(login(.), login_form_handler,
                 [id(login_form), priority(-100)]).
@@ -41,7 +42,7 @@
 
 login_form_handler(_Request) :-
       reply_html_page( % TODO decide how styling should happen
-          title('Login Form Page'),
+          title(\local('Login Form')),
           \login_form_page).
 
 :-html_meta login_form(html, ?, ?).
@@ -84,30 +85,35 @@ login_user_name_field -->
                 required])).
 
 login_password_field -->
+    { local('Password', Placeholder) },
     html(input([type(password),
                 name(passwd),
-                placeholder('Password'),
+                placeholder(Placeholder),
                required])).
 
 login_remember_me_check -->
     html(input([type(checkbox), name(rememberme)])).
 
 login_submit -->
+    {  local('Log In', Submit) },
     html(input([type(submit),
                 name(submit),
-                value('Log In')])).
+                value(Submit)])).
 
 login_forgot_password -->
-      html(a(href(location_by_id(forgot)), ['forgot password or user name'])).
+      html(a(href(location_by_id(forgot)),
+             [\local('forgot password or user name')])).
 
 login_form_page -->
     html(\login_form([
               \login_hidden_referer,
               div(\login_register_link),
               \login_warning,
-              div([label(for(uname), 'User Name:'), \login_user_name_field]),
-              div([label(for(passwd), 'Password:'), \login_password_field]),
-              div([\login_remember_me_check, 'Remember me']),
+              div([label(for(uname), \local('User Name:')),
+                   \login_user_name_field]),
+              div([label(for(passwd), \local('Password:')),
+                   \login_password_field]),
+              div([\login_remember_me_check, \local('Remember me')]),
               div(\login_forgot_password),
               div(\login_submit)
           ])).
@@ -132,7 +138,7 @@ do_login_handler(Request) :-
         do_actual_login(Status, SuccessURL, UserName, Request).
 do_login_handler(_Request) :-
       reply_html_page(
-          title('improper login'),
+          title(\local('improper login')),
           \improper_login).
 
 % TODO this is public, pldoc it
@@ -174,6 +180,6 @@ improper_login -->
       html(
           div(class('improper-login'),
               [
-                  h1('Sorry, login request ill formed'),
-                  a(href(location_by_id(home), 'Return to home'))
+                  h1(\local('Sorry, login request ill formed')),
+                  a(href(location_by_id(home), \local('Return to home')))
               ])).

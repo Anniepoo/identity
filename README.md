@@ -130,9 +130,10 @@ TODO - explain how to wire up the database.
       * list of everything you can configure - pages, strings, behavior
  * Design how configuration works. Don't just let it happen.
       * global settings
-      * how initialization works  (lazy?, application programmer calls?)
-      * strings
-      * page layout
+      * how initialization works  (lazy?, application programmer calls?) - choose ap programmer
+      * strings - local//1 works
+      * page layout - override handler
+
  * BUG - click the secret link on the homepage. Login page comes up. After logging in, you don't go to the secret, you go home.
  * add real integration tests
  * add email activation
@@ -142,6 +143,8 @@ TODO - explain how to wire up the database.
  * Add  checks on uname/pw size
  * Add pw reset email
  * document all
+ * make a directive & another expansion that lets app programmer set a prefix as
+requiring a role
  * Add a meta-inclusion that adds unauthorized class to link if user not authorized
  * Add a pengine endpoint that says yes/no an endpoint is authorized
  * Try overriding login, registration, and forbidden pages

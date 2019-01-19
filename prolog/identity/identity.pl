@@ -1,6 +1,4 @@
 :- module(identity, [
-              current_user/1,   % reexported
-              current_user//0   % reexported
           ]).
 
 /** <module> identity - pack to manage user identities on the SWI-Prolog web framework.
@@ -17,10 +15,9 @@
 
 http:location(login, root(login), [priority(-100)]).
 
+:- ensure_loaded(library(identity/customize)).
 :- ensure_loaded(library(identity/login_page)).
 :- ensure_loaded(library(identity/logout)).
-:- reexport(library(identity/login_database), [current_user/1,
-                                              current_user//0]).
 :- use_module(library(identity/login_database), [user_property/2]).
 
 		 /*******************************
@@ -39,7 +36,6 @@ http:location(login, root(login), [priority(-100)]).
 %
 %   If the user is logged in, we add user(User) to the request
 %
-
 user_expand(Request0, Request, _Options) :-
     http_in_session(_),
     http_session_data(user(User)),
