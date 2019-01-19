@@ -32,6 +32,8 @@ authenticate_user(_, _, IUOP) :-
 
 % TODO this can fail - probably not handled
 % % TODO decide - should it throw?
+% TODO - handle attempt to add user when they exist
+% gracefully
 add_user(UName, Password, Email) :-
     \+ user_property(UName, _),
     password_hash(Password, Hash),

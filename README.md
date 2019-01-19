@@ -128,13 +128,7 @@ TODO - explain how to wire up the database.
 
  * add to README
       * list of everything you can configure - pages, strings, behavior
- * Design how configuration works. Don't just let it happen.
-      * global settings - use settings library
-      * how initialization works  (lazy?, application programmer calls?) - choose ap programmer
-      * strings - local//1 works
-      * page layout - override handler
-
- * BUG - click the secret link on the homepage. Login page comes up. After logging in, you don't go to the secret, you go home.
+  * BUG - click the secret link on the homepage. Login page comes up. After logging in, you don't go to the secret, you go home.
  * add real integration tests
  * add email activation
  * add debug email - just prints debug message
@@ -175,6 +169,12 @@ requiring a role
  * clean up all the redundancy in `login_database`, use `user_property`
  * make real persist API 
  * make default persist API
+* Design how configuration works. Don't just let it happen.
+      * global settings - use settings library
+      * how initialization works  (lazy?, application programmer calls?) - choose ap programmer
+      * strings - local//1 works
+      * page layout - override handler
+
 
 
 # other web design patterns

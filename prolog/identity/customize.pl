@@ -27,6 +27,6 @@ local(X, X).
 		 *           SETTINGS           *
 		 *******************************/
 :- setting(identity:style, atom, default,
-           "Name of the style to appy to identity pages").
+           "Name of the style to apply to identity pages").
 :- setting(identity:require_activation_email, boolean, false,
            "true = require activation email, false = not required").
