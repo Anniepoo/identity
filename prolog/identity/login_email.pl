@@ -43,7 +43,16 @@ send_activation_email(UName, Email, Key) :-
 */
 % TODO probably needs base option to not get a relative uri
 activation_link(UName, Key, Link) :-
-    http_link_to_id(login(activate/UName/Key), [], Link).
+    http_link_to_id(activate, [], Base),
+    setting(http:public_host, Host),
+    setting(http:public_port, Port),
+    setting(http:public_scheme, Scheme),
+    (   Port = 80
+    ->  format(atom(Link), '~w://~w~w~w/~w',
+               [Scheme, Host, Base, UName, Key])
+    ;   format(atom(Link), '~w://~w:~w~w/~w',
+               [Scheme, Host, Port, Base, UName, Key])
+    ).
 
 :- http_handler(login(activate/UName/Key), activate_user(UName, Key), [id(activate)]).
 
@@ -55,7 +64,8 @@ activate_user(UName, Key, Request) :-
     assert_user_property(UName, role(user)),
     http_link_to_id(home, [], HREF),
     http_redirect(see_other, HREF, Request).
-
+% TODO above should actually show an 'ok youre activated' page
+%
 % TODO fix to route variable and no login
 :- http_handler(login(resend/UName), resend_activation(UName),
                 [id(resend)]).

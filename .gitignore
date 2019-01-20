@@ -7,5 +7,6 @@ test/secret_identity_key
 \#*.*\#
 .\#*.*
 users.db
+settings.db
 
 

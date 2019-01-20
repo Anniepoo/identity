@@ -20,6 +20,11 @@ local(English) -->
     { local(English, Local) },
     html(Local).
 
+:- multifile customize:local_hook/2.
+
+local(X, Y) :-
+    customize:local_hook(X,Y),
+    !.
 local(X, X).
 
 
