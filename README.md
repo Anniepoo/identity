@@ -141,7 +141,7 @@ priority user:location in another place
 ---
 
 If your user doesn't have access to the page, they will be directed to an
-error page. See the error section for the default no-access page. If you would
+error page. See the error section of `library(identity/identity) for the default no-access page. If you would
 like to create your own status page, copy this code and ensure it's loaded **after**
 the identity pack is loaded.
 
@@ -225,6 +225,7 @@ requiring a role
  * add logging of various events
  * add debug/3 calls
  * IP throttle registration & login
+ * make a security check wizard
 
 # DONE
 
