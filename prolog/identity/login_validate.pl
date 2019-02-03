@@ -9,34 +9,124 @@
  The first argument is a format spec. Format specs are a list of
  options:
 
+  * client
+  Some options below are marked (server). If this option is NOT included
+  these constraints are only checked when the form is submitted.
+  If it is included, these options are checked via a pengine call each
+  time the end user alters the field.
   * regex(Regex)
   Regex is a PCRE regular expression in a string.
+  The input will be required to match this regex as well as any
+  other options. This regex will be sandwiched between ^ and $
   * length(Min,Max)
-  inclusive range of lengths
+  inclusive range of valid lengths
   * needs(Type)
   repeatable option, validates only if it has this type
   * forbid(Type)
   repeatable option, validates only if this type absent
   * obscene
-  forbids strings with obscene substrings. Note a pengine
-  call is made.
+  forbids strings with obscene substrings when the form is submitted
+  (server)
   * allow(Type)
   forbid all but this type. If repeated, allow any of the types
-  * unique_client
-  test uniqueness on client as typed. makes pengine call. implies
-  unique
   * unique
-  test uniqueness when form submitted. user registration must be
-unique usernames so unique is implied.
+  test uniqueness when form submitted (server). user registration must
+  be unique usernames so unique is implied. Note that it's possible for
+  a name to be accepted on client and rejected on server if another user
+  makes the same name at the same time.
+  * homoglyphs
+  Treat all homoglyphs of a name as the canonical glyph (usually the one
+  with lowest code point)
+
 
 TODO
 
-Types are char_type/2 types
+Types are char_type/2 types. The types cntrl and ascii must not be used.
 
  */
 
 % re_match("^(?=.{2,8}$).*(?=.{2,8})(?=.*[a-zA-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).*$",
 % "t0!IAok!").
+% /^.*(?=.{2,})(?=.*[a-zA-Z])(?=.*\d)(?=.*[^A-Za-z0-9"]).*$/;
+%
+
+% TODO stub
+valid(FieldName=bad, Status) :-
+    format(atom(Status), 'field ~w is bad', [FieldName]).
+valid(_=Value, ok) :-
+    Value \= bad.
+% TODO handle passwd2 special case
+
+% TODO table this
+%
+:- meta_predicate if_opt(+, 3, +, ?, ?).
+
+if_opt(Pattern, DCG, Options, A, B) :-
+    memberchk(Pattern, Options),
+    call(DCG, Options, A, B).
+if_opt(Pattern, _, Options) -->
+    { \+ memberchk(Pattern, Options) },
+    [].
 
 
-    % /^.*(?=.{2,})(?=.*[a-zA-Z])(?=.*\d)(?=.*[^A-Za-z0-9"]).*$/;
+pcre_regex(Options) -->
+    "^",
+    if_opt(regex(_), regex_section, Options),
+    if_opt(length(_,_), length_section, Options),
+    if_opt(forbid(_), forbid_sections, Options),
+    if_opt(allow(_), allow_sections, Options),
+    ".*",
+    if_opt(needs(_), needs_sections, Options),
+    ".*$".
+
+regex_section(Options) -->
+    { bagof(Regex, member(regex(Regex), Options), Regexes) },
+    regex_patt(Regexes).
+
+regex_patt([]) --> [].
+regex_patt([Patt|Rest]) -->
+    "(?=",
+    { string_codes(Patt, Codes) },
+    Codes,
+    "$)",
+    regex_patt(Rest).
+
+length_section(Options) -->
+    { memberchk(length(Min, Max), Options),
+      format(codes(Codes), "(?=.{~d,~d}$)", [Min, Max])
+    },
+    Codes.
+
+forbid_section(Options) -->
+    { bagof(Type, member(forbid(Type), Options), Types) },
+    forbid_patt(Types).
+
+forbid_patt([]) --> [].
+forbid_patt([Type|Rest]) -->
+    "(?=[^",
+    type_pcre(Type),
+    "]*$)",
+    forbid_patt(Rest).
+
+type_pcre(Type) -->
+    { type_pcre(Type, Codes) },
+    Codes.
+
+type_pcre(alnum, `0-9a-zA-Z`).
+type_pcre(alpha, `a-zA-Z`).
+type_pcre(csym, `_0-9a-zA-Z`).
+type_pcre(csymf, `_a-zA-Z`).
+type_pcre(white, `\\t `).
+
+% TODO partly done
+%
+% TODO not working - some types can't be converted.
+
+
+
+
+
+
+
+
+

@@ -11,6 +11,7 @@
 :- use_module(library(identity/login_crypto)).
 :- use_module(library(identity/login_database)).
 :- use_module(library(identity/customize)).
+:- use_module(library(identity/login_validate)).
 
 :- http_handler(login(register), register_form_handler, [id(register), priority(-100)]).
 
@@ -73,16 +74,43 @@ doregister_handler(Request) :-
         http_read_data(Request, Data, []),
         member(uname=UserName, Data),
         member(passwd=Password, Data),
-        member(passwd2=Password, Data),
+        member(passwd2=Password2, Data),
         member(email=Email, Data),
+        validate(ok, [uname=UserName,
+                  passwd=Password,
+                  passwd2=Password2,
+                  email=Email],
+                 Status),
         (   member(referer=SendUserTo, Data) ;
             http_location_by_id(home, SendUserTo) % TEST this
         ),
-        add_user(UserName,
+        (   Status == ok
+        ->
+            add_user(UserName,
                  Password,
                  Email
                  ),
-        do_actual_login(ok, SendUserTo, UserName, Request).
+            do_actual_login(ok, SendUserTo, UserName, Request)
+        ;
+           www_form_encode(Status, URLStatus),
+           http_location_by_id(register, RegisterPage),
+            format('Status: 302 Found~n'),
+            format('Location: ~w?warn=~w~n', [RegisterPage, URLStatus]),
+            format('Content-type: text/plain~n~n')
+        ).
+
+validate(Status, [], Status).
+validate(ok, [FieldName=Value | Rest], Status) :-
+    valid(FieldName=Value, MyStatus),
+    validate(MyStatus, Rest, Status).
+validate(OldStatus, [FieldName=Value | Rest], Status) :-
+    valid(FieldName=Value, ok),
+    validate(OldStatus, Rest, Status).
+validate(OldStatus, [FieldName=Value | Rest], Status) :-
+    valid(FieldName=Value, ThisStatus),
+    atomic_list_concat([OldStatus, ' ', ThisStatus], NewStatus),
+    validate(NewStatus, Rest, Status).
+
 /*
         Status = ok,  %  TODO make this work probably with a throw
         www_form_encode(Status, URLStatus),

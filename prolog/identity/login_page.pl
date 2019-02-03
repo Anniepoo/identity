@@ -29,6 +29,7 @@
 :- use_module(library(identity/login_database)).
 :- ensure_loaded(library(identity/login_register)).
 :- use_module(library(identity/customize)).
+:- use_module(library(identity/login_validate)).
 
 :- http_handler(login(.), login_form_handler,
                 [id(login_form), priority(-100)]).
