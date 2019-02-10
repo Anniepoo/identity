@@ -25,11 +25,9 @@
 :- use_module(library(http/http_wrapper)).
 :- use_module(library(http/http_parameters)).
 :- use_module(library(http/http_session)).
-:- use_module(library(identity/login_crypto)).
 :- use_module(library(identity/login_database)).
 :- ensure_loaded(library(identity/login_register)).
 :- use_module(library(identity/customize)).
-:- use_module(library(identity/login_validate)).
 
 :- http_handler(login(.), login_form_handler,
                 [id(login_form), priority(-100)]).

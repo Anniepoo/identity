@@ -24,7 +24,7 @@ And forking and hacking on this or just stealing parts are valid.
 
 ## Version
 
-This software depends on SWI-Prolog 7.7.26 or later. As of this writing, 
+This software depends on SWI-Prolog 7.7.26 or later. As of this writing,
 that release is not yet released, so you will need to run from HEAD.
 
 ## Status
@@ -61,7 +61,7 @@ Now you can load identity.
 ---
 
 We won't need sessions, generally, for users not logged in.
-Set your session options to `create(noauto)` prior to starting the server. 
+Set your session options to `create(noauto)` prior to starting the server.
 You might also want to increase the session time.
 
 ---
@@ -73,6 +73,15 @@ go :-
         ]),
     http_server(http_dispatch, [port(5000)]).
 ---
+
+###  Setup static file handlers
+
+You will need the normal js, css, and img handlers. You can either just
+load library(identity/login_static) and let pack(identity) handle it, or
+set them up yourself.
+
+As long as the abstract paths `js(.)`, `css(.)`, and `img(.)` point
+at the appropriate directories you'll be fine.
 
 ### Attach Database
 
@@ -95,7 +104,7 @@ If you need something else, `library(identity/login_database)` provides this set
 
 Each takes the arguments `UserName` and a compound. They make a key-value store in the obvious way.
 
-All second arg values are compounds. Currently all are of arity 1. 
+All second arg values are compounds. Currently all are of arity 1.
 
 At minimum this set of compounds should be supported. If at all possible storing arbitrary functors
 should be supported, as the registration form roadmap includes adding arbitrary other info.
@@ -108,18 +117,18 @@ This store is a convenient place to store other per_user data.
  * activation_key(Key) - one of poss. several valid keys to email activate the account
 
 
-These user roles are known. 
+These user roles are known.
 
  * needs_activation - if this role is present the user is redirected to the needs activation page
  * user -logged in users who can do normal things
 
-When a user has logged in, completed 2FA, activated their account, isn't banned, and so on, they 
+When a user has logged in, completed 2FA, activated their account, isn't banned, and so on, they
 have role(user). They may have additional roles (admin, teacher, ...).
 
 ### Set Access
 
 Add a **role/1** option to any handler that requires login. This can be any
-roles you want. A common set would be [user, admin], and most 'normal' pages would be `role(user)`. 
+roles you want. A common set would be [user, admin], and most 'normal' pages would be `role(user)`.
 Non logged in users can access only pages without a role.
 
 ### Sessions
@@ -157,9 +166,9 @@ By implementing the multifile local_hook/2 you can alter most user messages. Ret
 
 ### Custom Pages
 
-You can make a higher priority version handler for any page. 
+You can make a higher priority version handler for any page.
 
-In a manner similar to overriding the login form handler, you can override 
+In a manner similar to overriding the login form handler, you can override
 login(register) to make a custom registration page. Additional fields in
 the registration form are persisted into the user info database
 
@@ -226,11 +235,12 @@ requiring a role
  * add debug/3 calls
  * IP throttle registration & login
  * make a security check wizard
+ * make sure you're compatible with https://support.1password.com/compatible-website-design/
 
 # DONE
 
  * clean up all the redundancy in `login_database`, use `user_property`
- * make real persist API 
+ * make real persist API
  * make default persist API
 * Design how configuration works. Don't just let it happen.
       * global settings - use settings library
@@ -246,7 +256,7 @@ requiring a role
 # other web design patterns
 
  * more general identity - profiles, display name, gravatar, zwinkies, gamification rating
- * Rails scaffold 
+ * Rails scaffold
  * flash pattern from rails
  * Hasura like 'watch this thing' against a knowledgebase
  * Site wide maintainence
@@ -254,17 +264,17 @@ requiring a role
  * CMS
  * store
  * map roi
- * threading, up/down voting, moderators, tagging, rate-limits, quote-replying, retweeting, crossposting. 
- 
+ * threading, up/down voting, moderators, tagging, rate-limits, quote-replying, retweeting, crossposting.
 
 
 
 
 
- 
 
 
- 
+
+
+
 
 
 

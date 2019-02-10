@@ -16,6 +16,7 @@ user:file_search_path(library, '../prolog').
 :- use_module(library(identity/identity)).
 :- use_module(library(identity/login_database), [use_default_db/0,
                                                 current_user//0]).
+:- use_module(library(identity/login_static)).
 
 go :-
     use_default_db,

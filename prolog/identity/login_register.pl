@@ -33,6 +33,7 @@ register_form -->
     html(
         form([method('POST'), action(location_by_id(doregister))],
              [
+                 \validate_js,
                  \login_warning,
                  \login_hidden_referer,
                  \login_email,
