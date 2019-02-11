@@ -1,5 +1,5 @@
 :- module(login_validate, [
-          validate_js//2,
+          validate_js//0,
           valid/2
           ]).
 /** <module> Form validation of username, password, and email
@@ -49,6 +49,25 @@ Types are char_type/2 types. The types cntrl and ascii must not be used.
 % "t0!IAok!").
 % /^.*(?=.{2,})(?=.*[a-zA-Z])(?=.*\d)(?=.*[^A-Za-z0-9"]).*$/;
 %
+:- use_module(library(http/html_write)).
+:- use_module(library(http/js_write)).
+
+validate_js -->
+    { MinLen = 4 },
+    html([\js_script({|javascript(MinLen)||
+         const minlen = MinLen;
+
+         function validateIdentity(Element) {
+                      console.log(Element.value);
+                      if(Element.value.length < minlen) {
+                          Element.classList.add("error");
+                      } else {
+                          Element.classList.remove("error");
+                      }
+                  };
+         |}),
+        style('.error { border: 3px solid #FF0000; }')
+         ]).
 
 % TODO stub
 valid(FieldName=bad, Status) :-
@@ -56,7 +75,7 @@ valid(FieldName=bad, Status) :-
 valid(_=Value, ok) :-
     Value \= bad.
 % TODO handle passwd2 special case
-
+/*
 % TODO table this
 %
 :- meta_predicate if_opt(+, 3, +, ?, ?).
@@ -123,7 +142,7 @@ type_pcre(white, `\\t `).
 % TODO not working - some types can't be converted.
 
 
-
+*/
 
 
 

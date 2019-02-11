@@ -33,14 +33,17 @@ register_form -->
     html(
         form([method('POST'), action(location_by_id(doregister))],
              [
-                 \validate_js,
-                 \login_warning,
+                 div(\login_warning),
                  \login_hidden_referer,
-                 \login_email,
-                 \login_user_name_field,
-                 \login_password_field,
-                 \login_password2_field,
-                 \login_submit_register
+                 div([label(for(email), \local('Email:')), \login_email]),
+                 div([label(for(uname), \local('User name:')),
+                            \login_user_name_field]),
+                 div([label(for(passwd), \local('Password:')),
+                      \login_password_field]),
+                 div([label(for(passwd2), \local('Repeat Password:')),
+                      \login_password2_field]),
+                 \login_submit_register,
+                 \validate_js
              ])).
 
 login_submit_register -->
@@ -53,6 +56,7 @@ login_email -->
     html(input([type(text),
                 name(email),
                 placeholder(Email),
+                oninput('validateIdentity(this)'),
                 required])).
 
 login_password2_field -->
