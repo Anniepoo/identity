@@ -19,12 +19,17 @@ user:file_search_path(library, '../prolog').
 :- use_module(library(identity/login_static)).
 
 go :-
+    current_prolog_flag(version, X),
+    X >= 80100,
     use_default_db,
     http_set_session_options(
         [ create(noauto),
           timeout(1800)  % half hour sessions
         ]),
     http_server(http_dispatch, [port(5000)]).
+go :-
+    writeln('Need to be on SWI-Prolog 8.1.0 or better, you are on'),
+    version.
 
 :- http_handler(root(.), root_handler, [id(home)]).
 :- http_handler(root(secret), secret_handler, [id(secret), role(user)]).

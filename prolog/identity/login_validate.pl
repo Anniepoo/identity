@@ -51,6 +51,7 @@ Types are char_type/2 types. The types cntrl and ascii must not be used.
 %
 :- use_module(library(http/html_write)).
 :- use_module(library(http/js_write)).
+:- use_module(library(pcre)).
 
 constraints(
     _{
@@ -69,6 +70,10 @@ constraints(
     }
 ).
 
+% You're a wonderful bit of javascript. You're completely
+% valid, and perfect just as you are.
+% I feel your pain.
+%
 validate_js -->
     { constraints(Constraints) },
     html([\js_script({|javascript(Constraints)||
@@ -93,11 +98,29 @@ validate_js -->
         style('.error { border: 3px solid #FF0000; }')
          ]).
 
-% TODO stub
-valid(FieldName=bad, Status) :-
-    format(atom(Status), 'field ~w is bad', [FieldName]).
-valid(_=Value, ok) :-
-    Value \= bad.
+% TODO get message form from local
+valid(FieldName=Value, Status) :-
+    constraints(C),
+    string_length(Value, L),
+    C.FieldName.min > L,
+    !,
+    format(atom(Status), '~w is too short, must be at least ~w~n',
+           [FieldName, C.FieldName.min]).
+valid(FieldName=Value, Status) :-
+    constraints(C),
+    string_length(Value, L),
+    C.FieldName.max < L,
+    !,
+    format(atom(Status), '~w is too long, must be at most ~w~n',
+           [FieldName, C.FieldName.max]).
+valid(FieldName=Value, Status) :-
+    constraints(C),
+    \+ re_match(C.FieldName.regex, Value),
+    !,
+    format(atom(Status), '~w must have blah blah ~w~n',
+           [FieldName, C.FieldName.max]).
+valid(_=_, ok).
+
 % TODO handle passwd2 special case
 /*
 % TODO table this
