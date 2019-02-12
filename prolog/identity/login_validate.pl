@@ -52,14 +52,38 @@ Types are char_type/2 types. The types cntrl and ascii must not be used.
 :- use_module(library(http/html_write)).
 :- use_module(library(http/js_write)).
 
+constraints(
+    _{
+        email: _{ min: 4,
+                  max: 128,
+                  regex: '^[A-Za-z0-9\\-_\\+\\.]+@[A-Za-z0-9\\-_\\+\\.]+'
+                },
+        uname: _{ min: 4,
+                  max: 128,
+                  regex: '^[A-Za-z0-9\\-_\\+\\.]+@[A-Za-z0-9\\-_\\+\\.]+'
+                },
+        passwd: _{ min: 4,
+                   max: 999,
+                   regex: '^(?=.{2,8}$).*(?=.{2,8})(?=.*[a-zA-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).*$'
+                 }
+    }
+).
+
 validate_js -->
-    { MinLen = 4 },
-    html([\js_script({|javascript(MinLen)||
-         const minlen = MinLen;
+    { constraints(Constraints) },
+    html([\js_script({|javascript(Constraints)||
+         const loginConstraints = Constraints;
 
          function validateIdentity(Element) {
                       console.log(Element.value);
-                      if(Element.value.length < minlen) {
+                      console.log(Element.name);
+                      var c = loginConstraints[Element.name];
+                      var patt = new RegExp(c.regex);
+
+                      if(Element.value.length < c.min ||
+                         Element.value.length > c.max ||
+                         patt.exec(Element.value) == null
+                         ) {
                           Element.classList.add("error");
                       } else {
                           Element.classList.remove("error");
