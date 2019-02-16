@@ -6,54 +6,14 @@
  *
  This module provides both client and server side validation.
 
- The first argument is a format spec. Format specs are a list of
- options:
-
-  * client
-  Some options below are marked (server). If this option is NOT included
-  these constraints are only checked when the form is submitted.
-  If it is included, these options are checked via a pengine call each
-  time the end user alters the field.
-  * regex(Regex)
-  Regex is a PCRE regular expression in a string.
-  The input will be required to match this regex as well as any
-  other options. This regex will be sandwiched between ^ and $
-  * length(Min,Max)
-  inclusive range of valid lengths
-  * needs(Type)
-  repeatable option, validates only if it has this type
-  * forbid(Type)
-  repeatable option, validates only if this type absent
-  * obscene
-  forbids strings with obscene substrings when the form is submitted
-  (server)
-  * allow(Type)
-  forbid all but this type. If repeated, allow any of the types
-  * unique
-  test uniqueness when form submitted (server). user registration must
-  be unique usernames so unique is implied. Note that it's possible for
-  a name to be accepted on client and rejected on server if another user
-  makes the same name at the same time.
-  * homoglyphs
-  Treat all homoglyphs of a name as the canonical glyph (usually the one
-  with lowest code point)
-
-
-TODO
-
-Types are char_type/2 types. The types cntrl and ascii must not be used.
-
  */
 
-% re_match("^(?=.{2,8}$).*(?=.{2,8})(?=.*[a-zA-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).*$",
-% "t0!IAok!").
-% /^.*(?=.{2,})(?=.*[a-zA-Z])(?=.*\d)(?=.*[^A-Za-z0-9"]).*$/;
-%
 :- use_module(library(http/html_write)).
 :- use_module(library(http/js_write)).
 :- use_module(library(pcre)).
 
-constraints(
+:- setting(identity:constraints,
+           dict,
     _{
         email: _{ min: 4,
                   max: 128,
@@ -73,8 +33,12 @@ constraints(
         passwd2: _{
                      warn: 'Field below must match password'
                  }
-    }
+    },
+           "A dict with the constraints to apply to the registration form"
 ).
+
+constraints(X) :-
+    setting(identity:constraints, X).
 
 % You're a wonderful bit of javascript. You're completely
 % valid, and perfect just as you are.
