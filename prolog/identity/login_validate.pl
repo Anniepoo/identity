@@ -69,6 +69,9 @@ constraints(
                    max: 999,
                    regex: '^(?=.{8,999}$)(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).*$',
                    warn:  'Password must be at least 8 long, and contain a capital letter, a lowercase letter, a digit, and a special symbol like !@#$%^&*()'
+                 },
+        passwd2: _{
+                     warn: 'Field below must match password'
                  }
     }
 ).
@@ -85,7 +88,8 @@ validate_js -->
          const loginTimers = {
                    email: null,
                    passwd: null,
-                   uname: null
+                   uname: null,
+                   passwd2: null
                };
 
          document.getElementById("emailwarn").innerHTML =
@@ -94,12 +98,31 @@ validate_js -->
                       loginConstraints['uname'].warn;
          document.getElementById("passwdwarn").innerHTML =
                       loginConstraints['passwd'].warn;
+         document.getElementById("passwd2warn").innerHTML =
+                      loginConstraints['passwd2'].warn;
 
          function validateIdentity(Element) {
                       loginTimers[Element.name] = null;
                       console.log(Element.value);
                       console.log(Element.name);
                       var c = loginConstraints[Element.name];
+
+                      if( Element.name == "passwd2") {
+                          var pw =  document.getElementById("passwd").value;
+                          var pw2 = Element.value;
+                          console.log(pw);
+                          console.log(pw2);
+
+                          if(pw === pw2) {
+                              Element.classList.remove("error");
+                              document.getElementById(Element.name + "warn").classList.remove('warn');
+                          } else {
+                              Element.classList.add("error");
+                              document.getElementById(Element.name + "warn").classList.add('warn');
+                            }
+                          return;
+                      }
+
                       var patt = new RegExp(c.regex);
 
                       if(Element.value.length < c.min ||

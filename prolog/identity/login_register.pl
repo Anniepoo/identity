@@ -45,7 +45,7 @@ register_form -->
                       \register_password_field]),
                  div([id(passwd2warn), class(warning)], \local('Field below must match password')),
                  div([label(for(passwd2), \local('Repeat Password:')),
-                      \login_password2_field]),
+                      \register_password2_field]),
                  \login_submit_register,
                  \validate_js
              ])).
@@ -66,23 +66,26 @@ register_password_field -->
     { local('Password', Placeholder) },
     html(input([type(password),
                 name(passwd),
+                id(passwd),
                 placeholder(Placeholder),
                 oninput('doValidation(this)'),
                required])).
 
 login_email -->
     { local('Email', Email) },
-    html(input([type(text),
+    html(input([type(email),
                 name(email),
                 placeholder(Email),
                 oninput('doValidation(this)'),
                 required])).
 
-login_password2_field -->
+register_password2_field -->
     { local('Repeat Password', RP) },
     html(input([type(password),
                 name(passwd2),
+                id(passwd2),
                 placeholder(RP),
+                oninput('doValidation(this)'),
                required])).
 
 
