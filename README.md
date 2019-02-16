@@ -24,8 +24,7 @@ And forking and hacking on this or just stealing parts are valid.
 
 ## Version
 
-This software depends on SWI-Prolog 7.7.26 or later. As of this writing,
-that release is not yet released, so you will need to run from HEAD.
+This software depends on SWI-Prolog 8.1.0 or later.
 
 ## Status
 
@@ -65,13 +64,13 @@ Set your session options to `create(noauto)` prior to starting the server.
 You might also want to increase the session time.
 
 ---
-go :-
-    use_default_db,
-    http_set_session_options(
-        [ create(noauto),
-          timeout(1800)  % half hour sessions
-        ]),
-    http_server(http_dispatch, [port(5000)]).
+	    go :-
+		use_default_db,
+		http_set_session_options(
+		    [ create(noauto),
+		      timeout(1800)  % half hour sessions
+		    ]),
+		http_server(http_dispatch, [port(5000)]).
 ---
 
 ###  Setup static file handlers
@@ -94,28 +93,29 @@ This solution is adequate for 100,000 users or so.
 If you need something else, `library(identity/login_database)` provides this set of multifile predicates.
 
 ---
-:- multifile
-    user_property_expansion/2,
-    set_user_property_expansion/2,
-    assert_user_property_expansion/2,
-    retract_user_property_expansion/2,
-    retractall_user_property_expansion/2.
+		:- multifile
+		    user_property_expansion/2,
+		    set_user_property_expansion/2,
+		    assert_user_property_expansion/2,
+		    retract_user_property_expansion/2,
+		    retractall_user_property_expansion/2.
 ---
 
 Each takes the arguments `UserName` and a compound. They make a key-value store in the obvious way.
 
 All second arg values are compounds. Currently all are of arity 1.
 
-At minimum this set of compounds should be supported. If at all possible storing arbitrary functors
-should be supported, as the registration form roadmap includes adding arbitrary other info.
-Any functor may appear multiple times. eg a user might have multiple roles.
-This store is a convenient place to store other per_user data.
+At minimum this set of compounds should be supported. 
 
  * password_hash(Hash) - A cryptographically secure pw hash
  * email(Email) - should be per-user unique
  * role(Role)
  * activation_key(Key) - one of poss. several valid keys to email activate the account
 
+If at all possible storing arbitrary functors
+should be supported, as the registration form roadmap includes adding arbitrary other info.
+**Any functor may appear multiple times**. eg a user might have multiple roles.
+This store is a convenient place to store other per_user data.
 
 These user roles are known.
 
@@ -158,11 +158,14 @@ the identity pack is loaded.
 
 Set the setting `identity:style` to  style pages. The default is `default`.
 
+Currently, the `.warning`, `.warn`, and `.error` classes are set with a style block at the end
+of the registration page. This is likely to change soon.
+
 ### Changing Language
 
 Most strings displayed to the user pass through `customize:local/2`.
 
-By implementing the multifile local_hook/2 you can alter most user messages. Return atoms.
+By implementing the multifile `local_hook/2` you can alter most user messages. Return atoms.
 
 ### Custom Pages
 
@@ -193,18 +196,31 @@ Implement `login_email:activation_email_hook(UName, Email, Link)`, sending the e
 
 If not implemented the default sends the link to `debug/3`. This can be useful for debugging.
 
+Currently not done, but working on password reset email. A similar hook will be provided.
+
+## Registration Validation
+
+validation is controlled by a nested dict. This dict is a setting, `identity:constraints`.
+See `login_validate.pl` for the default. Other than using messy regexes, it's fairly obvious.
+
+I intend to add ajax form verification at some point.
+
 ## REST endpoints
 
+These are not yet addressed. 
 
 ## TODO - many things are yet to do
 
  * add to README
       * list of everything you can configure - pages, strings, behavior
   * BUG - click the secret link on the homepage. Login page comes up. After logging in, you don't go to the secret, you go home.
+ * password forgot is stubbed in, fix it
  * add real integration tests
  * add OAuth
  * Add  checks on uname/pw size
  * Add pw reset email
+ * REST endpoints
+ * pengine endpoints
  * document all
  * make a directive & another expansion that lets app programmer set a prefix as
 requiring a role
@@ -224,7 +240,7 @@ requiring a role
  * allow changing password
  * Gravatars
  * CAPTCHA
- * validate uname char set to avoid faking (display non ascii in color?)
+ * validate uname char set to avoid faking (display non ascii in color?) homoglyphs
  * guests w/ sessions can get swish svg-atars
  * maybe sep. pack with svg-atars and settings page
  * password strength meter
