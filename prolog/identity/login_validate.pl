@@ -57,15 +57,18 @@ constraints(
     _{
         email: _{ min: 4,
                   max: 128,
-                  regex: '^[A-Za-z0-9\\-_\\+\\.]+@[A-Za-z0-9\\-_\\+\\.]+'
+                  regex: '^[A-Za-z0-9\\-_\\+\\.]+@(([A-Za-z0-9\\-_\\+]+)\\.)+[A-Za-z0-9]+$',
+                  warn: 'Must be a valid email address'
                 },
         uname: _{ min: 4,
                   max: 128,
-                  regex: '^[A-Za-z0-9\\-_\\+\\.]+@[A-Za-z0-9\\-_\\+\\.]+'
+                  regex: '^[A-Za-z0-9\\-_\\+\\.]+$',
+                  warn: 'User name must be 4-128 characters from a-z, A-Z, 0-9, - and _'
                 },
         passwd: _{ min: 4,
                    max: 999,
-                   regex: '^(?=.{2,8}$).*(?=.{2,8})(?=.*[a-zA-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).*$'
+                   regex: '^(?=.{8,999}$)(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).*$',
+                   warn:  'Password must be at least 8 long, and contain a capital letter, a lowercase letter, a digit, and a special symbol like !@#$%^&*()'
                  }
     }
 ).
@@ -79,7 +82,21 @@ validate_js -->
     html([\js_script({|javascript(Constraints)||
          const loginConstraints = Constraints;
 
+         const loginTimers = {
+                   email: null,
+                   passwd: null,
+                   uname: null
+               };
+
+         document.getElementById("emailwarn").innerHTML =
+                      loginConstraints['email'].warn;
+         document.getElementById("unamewarn").innerHTML =
+                      loginConstraints['uname'].warn;
+         document.getElementById("passwdwarn").innerHTML =
+                      loginConstraints['passwd'].warn;
+
          function validateIdentity(Element) {
+                      loginTimers[Element.name] = null;
                       console.log(Element.value);
                       console.log(Element.name);
                       var c = loginConstraints[Element.name];
@@ -90,14 +107,24 @@ validate_js -->
                          patt.exec(Element.value) == null
                          ) {
                           Element.classList.add("error");
+                          document.getElementById(Element.name + "warn").classList.add('warn');
                       } else {
                           Element.classList.remove("error");
+                          document.getElementById(Element.name + "warn").classList.remove('warn');
                       }
-                  };
-         |}),
-        style('.error { border: 3px solid #FF0000; }')
-         ]).
+                  }
 
+           function doValidation(Element) {
+               if(loginTimers[Element.name] != null) {
+                   clearTimeout(loginTimers[Element.name]);
+               }
+               loginTimers[Element.name] = setTimeout(
+                                               () => validateIdentity(Element),
+                                           600);
+           }
+         |}),
+        style('.error { border: 3px solid #FF0000; }\n.warning { display: none; }\n.warning.warn { display: block;\ncolor: #aa6666; }')
+         ]).
 % TODO get message form from local
 valid(FieldName=Value, Status) :-
     constraints(C),

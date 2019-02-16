@@ -35,11 +35,15 @@ register_form -->
              [
                  div(\login_warning),
                  \login_hidden_referer,
+                 div([id(emailwarn), class(warning)], &(nbsp)),
                  div([label(for(email), \local('Email:')), \login_email]),
+                 div([id(unamewarn), class(warning)], &(nbsp)),
                  div([label(for(uname), \local('User name:')),
-                            \login_user_name_field]),
+                            \register_user_name_field]),
+                 div([id(passwdwarn), class(warning)], &(nbsp)),
                  div([label(for(passwd), \local('Password:')),
-                      \login_password_field]),
+                      \register_password_field]),
+                 div([id(passwd2warn), class(warning)], \local('Field below must match password')),
                  div([label(for(passwd2), \local('Repeat Password:')),
                       \login_password2_field]),
                  \login_submit_register,
@@ -51,12 +55,27 @@ login_submit_register -->
                 name(submit),
                 value('Register')])).
 
+register_user_name_field -->
+    html(input([type(text),
+                name(uname),
+                placeholder('User Name'),
+                oninput('doValidation(this)'),
+                required])).
+
+register_password_field -->
+    { local('Password', Placeholder) },
+    html(input([type(password),
+                name(passwd),
+                placeholder(Placeholder),
+                oninput('doValidation(this)'),
+               required])).
+
 login_email -->
     { local('Email', Email) },
     html(input([type(text),
                 name(email),
                 placeholder(Email),
-                oninput('validateIdentity(this)'),
+                oninput('doValidation(this)'),
                 required])).
 
 login_password2_field -->
