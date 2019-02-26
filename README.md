@@ -212,14 +212,12 @@ These are not yet addressed.
 ## TODO - many things are yet to do
 
  * add to README
-      * list of everything you can configure - pages, strings, behavior
-  * BUG - click the secret link on the homepage. Login page comes up. After logging in, you don't go to the secret, you go home.
- * password forgot is stubbed in, fix it
+ * list of everything you can configure - pages, strings, behavior
+ * BUG - click the secret link on the homepage. Login page comes up. After logging in, you don't go to the secret, you go home.
+ * password forgot is stubbed in, Add pw reset email
  * add real integration tests
  * add OAuth
- * Add  checks on uname/pw size
- * Add pw reset email
- * REST endpoints
+   * REST endpoints
  * pengine endpoints
  * document all
  * make a directive & another expansion that lets app programmer set a prefix as
@@ -266,6 +264,7 @@ requiring a role
  * add email activation
  * add debug email - just prints debug message
  * add styling support
+* Add  checks on uname/pw size
 
 
 
