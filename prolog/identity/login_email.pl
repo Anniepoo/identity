@@ -1,6 +1,7 @@
 :- module(login_email,
           [
-              send_activation_email/3
+              send_activation_email/3,
+              send_forgot_email/1
           ]).
 /** <module> Predicates related to sending out activation emails
  *
@@ -79,3 +80,41 @@ resend_activation(UName, Request) :-
     http_link_to_id(home, [], HREF),
     http_redirect(see_other, HREF, Request).
 
+		 /*******************************
+		 *     Reset Password           *
+		 *******************************/
+
+:- multifile login_email:forgot_email_hook/3.
+
+send_forgot_email(EMail) :-
+    user_property(UName, email(EMail)),
+    uuid(UUID),
+    get_time(Time),
+    assert_user_property(UName, forgot_pw(UUID=Time)),
+    send_forgot_email(UName, EMail, UUID).
+send_forgot_email(_).
+
+send_forgot_email(UName, Email, Key) :-
+    forgot_link(UName, Key, Link),
+    login_email:forgot_email_hook(UName, Email, Link),
+    !.
+send_forgot_email(UName, Email, Key) :-
+    forgot_link(UName, Key, Link),
+    debug(identity(email), 'Forgot pw email to ~w link ~w',
+          [UName, Email, Link]).
+
+% TODO probably needs base option to not get a relative uri
+% % TODO refactor to get rid of duplication
+forgot_link(UName, Key, Link) :-
+    http_link_to_id(resetpw, [], Base),
+    setting(http:public_host, Host),
+    setting(http:public_port, Port),
+    setting(http:public_scheme, Scheme),
+    www_form_encode(UName, URIUName),
+    www_form_encode(Key, URIKey),
+    (   Port = 80
+    ->  format(atom(Link), '~w://~w~w~w/~w',
+               [Scheme, Host, Base, URIUName, URIKey])
+    ;   format(atom(Link), '~w://~w:~w~w/~w',
+               [Scheme, Host, Port, Base, URIUName, URIKey])
+    ).

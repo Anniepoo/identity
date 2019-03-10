@@ -20,6 +20,7 @@ http:location(login, root(login), [priority(-100)]).
 :- ensure_loaded(library(identity/logout)).
 :- ensure_loaded(library(identity/login_email)).
 :- use_module(library(identity/login_database), [user_property/2]).
+:- ensure_loaded(library(identity/login_forgot)).
 
 		 /*******************************
 		 *            EXPAND		*

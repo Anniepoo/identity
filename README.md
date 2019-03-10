@@ -238,6 +238,8 @@ requiring a role
  * allow changing password
  * Gravatars
  * CAPTCHA
+ * admin logs in as user - to let admins change to being a user to help 'debug' user issues.
+ * passwordless - to log in you give email and get a one-time link.
  * validate uname char set to avoid faking (display non ascii in color?) homoglyphs
  * guests w/ sessions can get swish svg-atars
  * maybe sep. pack with svg-atars and settings page

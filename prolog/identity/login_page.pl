@@ -34,11 +34,6 @@
 :- http_handler(login(dologin), do_login_handler,
                 [id(dologin)]).
 
-% TODO fix these, they're stubs so I can test
-% TODO make 'forgot password'
-:- http_handler(login(forgot), login_form_handler, [id(forgot)]).
-
-
 login_form_handler(_Request) :-
       setting(identity:style, Style),
       reply_html_page(
