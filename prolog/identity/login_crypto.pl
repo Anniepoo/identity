@@ -8,6 +8,10 @@
  *  I think token_uname and make_login_cookie are
   * now dead, but will be needed for remember_me
  *
+ * Notice that you can't just compare if two hashes unify.
+ * See authenticate_user/2 in login_database for the proper
+ * way to do it.
+ *
  */
 :- use_module(library(crypto)).
 
