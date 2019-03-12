@@ -31,6 +31,9 @@
                    warn:  'Password must be at least 8 long, and contain a capital letter, a lowercase letter, a digit, and a special symbol like !@#$%^&*()'
                  },
         passwd2: _{
+                     min: 4,
+                     max: 999,
+                     regex: '^(?=.{8,999}$)(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).*$',
                      warn: 'Field below must match password'
                  }
     },

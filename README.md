@@ -209,6 +209,19 @@ I intend to add ajax form verification at some point.
 
 These are not yet addressed. 
 
+## Expert system
+
+We really just need a list of things that must be true, a list of goals, some that share variables,
+and we start at the front and call each. If it fails, we call make_true(Goal), and that interacts with the user
+to make the thing true.
+But the list of goals could change (eg if you allow pw reset you must setup the backend email server),
+so maybe it's more like an adventure game, where you must walk through the map, and it presents choices
+and has planner like actions. Then automatically take the action when only one is possible.
+
+Alternatively, we could have 2 phases - first we ask the user what they want to do, and then we 
+copile what they need to do, and guide them through doing it. And maybe they can save their work
+in the second part. 
+
 ## TODO - many things are yet to do
 
  * add to README
@@ -252,6 +265,8 @@ requiring a role
  * IP throttle registration & login
  * make a security check wizard
  * make sure you're compatible with https://support.1password.com/compatible-website-design/
+ * 2FA
+ * allow either email or uname as uname
 
 # DONE
 

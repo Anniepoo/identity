@@ -16,6 +16,7 @@
 :- use_module(library(identity/customize)).
 :- use_module(library(identity/login_crypto), [password_hash/2]).
 :- use_module(library(identity/login_database), [user_property/2, set_user_property/2]).
+:- use_module(library(http/http_client)).
 
 :- setting(identity:reset_email_life, integer, 86400,
            "Time a password reset email is valid").
@@ -51,7 +52,7 @@ forgot_form_page -->
                  h1(class('forgotheader'), \local('Password reset')),
                  p(
 \local('Enter your email address. An email with a password reset link will be sent')),
-                 p([input([name(email), type(text)]),
+                 p([input([name(email), type(email), required]),
                  input([name(submit), type(submit), value('Send')])])
              ])
     ]).
@@ -60,10 +61,9 @@ forgot_form_page -->
 % email
 doforgot_form_handler(Request) :-
       setting(identity:style, Style),
-      http_parameters(
-            Request,
-            [ email(Email)
-            ]),
+      member(method(post), Request), !,
+      http_read_data(Request, Data, []),
+      member(email=Email, Data),
       send_forgot_email(Email),
       reply_html_page(
           Style,

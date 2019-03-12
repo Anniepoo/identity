@@ -100,7 +100,7 @@ send_forgot_email(UName, Email, Key) :-
     !.
 send_forgot_email(UName, Email, Key) :-
     forgot_link(UName, Key, Link),
-    debug(identity(email), 'Forgot pw email to ~w link ~w',
+    debug(identity(email), 'Forgot pw email to user ~w at email ~w link ~w',
           [UName, Email, Link]).
 
 % TODO probably needs base option to not get a relative uri
@@ -113,8 +113,8 @@ forgot_link(UName, Key, Link) :-
     www_form_encode(UName, URIUName),
     www_form_encode(Key, URIKey),
     (   Port = 80
-    ->  format(atom(Link), '~w://~w~w~w/~w',
+    ->  format(atom(Link), '~w://~w~w/~w/~w',
                [Scheme, Host, Base, URIUName, URIKey])
-    ;   format(atom(Link), '~w://~w:~w~w/~w',
+    ;   format(atom(Link), '~w://~w:~w~w/~w/~w',
                [Scheme, Host, Port, Base, URIUName, URIKey])
     ).

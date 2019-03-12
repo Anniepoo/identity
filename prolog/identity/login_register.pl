@@ -96,6 +96,7 @@ register_password2_field -->
 
 :- http_handler(login(doregister), doregister_handler, [id(doregister), identity(guest), priority(-100)]).
 
+
 doregister_handler(Request) :-
         member(method(post), Request),
         http_read_data(Request, Data, []),
@@ -105,7 +106,7 @@ doregister_handler(Request) :-
         member(email=Email, Data),
         validate(ok, [uname=UserName,
                   passwd=Password,
-                  passwd2=Password2,
+                  passwd2=[Password, Password2],
                   email=Email],
                  Status),
         (   member(referer=SendUserTo, Data) ;
@@ -125,6 +126,13 @@ doregister_handler(Request) :-
             format('Location: ~w?warn=~w~n', [RegisterPage, URLStatus]),
             format('Content-type: text/plain~n~n')
         ).
+
+validate(MyStatus, [passwd2=[P,P] | Rest], Status) :-
+    validate(MyStatus, Rest, Status).
+validate(MyStatus, [passwd2=[P1,P2] | Rest], Status) :-
+    P1 \= P2,
+    atom_concat(MyStatus, 'Passwords Differ~n', NewStatus),
+    validate(NewStatus, Rest, Status).
 
 validate(Status, [], Status).
 validate(ok, [FieldName=Value | Rest], Status) :-
