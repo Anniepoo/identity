@@ -90,7 +90,8 @@ user_property(UName, Property) :-
 user_property(UName, Property) :-
     using_default_db,
     with_mutex(login_database,
-               u_prop(UName, Property)).
+               bagof(N-P, u_prop(N, P), L)),
+    member(UName-Property, L).
 
 set_user_property(UName, Property) :-
     set_user_property_expansion(UName, Property).

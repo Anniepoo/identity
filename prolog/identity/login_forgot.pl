@@ -80,7 +80,9 @@ doforgot_page -->
 resetpw_form_handler(Request) :-
       setting(identity:style, Style),
       member(path(P), Request),
-      reverse(P, [URIKey, URIUName | _]),
+      atom_string(P, PS),
+      split_string(PS, "/", "/", PL),
+      reverse(PL, [URIKey, URIUName | _]),
       reply_html_page(
           Style,
           title(\local('Reset Password')),
@@ -89,15 +91,17 @@ resetpw_form_handler(Request) :-
 resetpw_form_page(URIUName, URIKey) -->
       { local('New Password', NewPasswordPlaceholder),
         local('Repeat New Password', NewPasswordPlaceholder2),
-        local('Change', CH)
+        local('Change', CH),
+        www_form_encode(UName, URIUName)
       },
       html([h1(\local('Reset Password')),
+           div(p(\local('Reset password for ~w'-[UName]))),
            form([method('POST'), action(location_by_id(doactualpwreset))],
                [
                 input([type(hidden), name(uname), value(URIUName)]),
                 input([type(hidden), name(resetkey), value(URIKey)]),
                 input([type(password), name(passwd), placeholder(NewPasswordPlaceholder)]),
-                input([type(password), name(spasswd2), placeholder(NewPasswordPlaceholder2)]),
+                input([type(password), name(passwd2), placeholder(NewPasswordPlaceholder2)]),
                 input([type(submit), name(submit), value(CH)])
                 ])]).
 
@@ -106,14 +110,14 @@ do_actual_reset_handler(Request) :-
       http_parameters(Request,
                       [
                           uname(UName, []),
-                          key(Key, []),
+                          resetkey(Key, []),
                           passwd(PassWD, []),
                           passwd2(PassWD2, [])
                       ]),
       (   PassWD = PassWD2,
           change_password(UName, Key, PassWD)
       ->
-          http_location_by_id(login(login), SuccessURL),
+          http_location_by_id(login_form, SuccessURL),
           http_redirect(see_other, SuccessURL, Request)
       ;
           reply_html_page(
