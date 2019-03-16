@@ -2,6 +2,12 @@
 
 An identity management system for SWI-Prolog.
 
+# Release 0.2.2
+
+This release has all basic functionality working.
+
+Testing has been minimal, but if you're adventurous, this is now the reasonable way to make a login and registration system in SWI-Prolog.
+
 # What it is
 
 Almost every web application has the notion of a user, with an account,
