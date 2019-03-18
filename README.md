@@ -246,7 +246,10 @@ requiring a role
  * Try overriding login, registration, and forbidden pages
  * Move the error page at bottom of identity to its own module
  * make rest endpoints work, or at least test that they do
+ * Add assistance to prevent CSRF - app programmer adds an inclusion in the form as a hidden field, and the matching id handler checks if it's a matching hash.   https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.md
+Can this be enforced by static analysis?
  * make sure pengines work
+ * Check out https://github.com/OWASP/CheatSheetSeries for instrusion safety
  * if you don't use some stuff in login_crypto for remember_me, remove it
  * handle username is email
  * handle registration invalid (eg dup email)
