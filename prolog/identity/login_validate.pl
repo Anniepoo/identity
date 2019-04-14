@@ -11,6 +11,7 @@
 :- use_module(library(http/html_write)).
 :- use_module(library(http/js_write)).
 :- use_module(library(pcre)).
+:- use_module(library(identity/customize)).
 
 :- setting(identity:constraints,
            dict,
@@ -121,21 +122,22 @@ valid(FieldName=Value, Status) :-
     string_length(Value, L),
     C.FieldName.min > L,
     !,
-    format(atom(Status), '~w is too short, must be at least ~w~n',
+    local('~w is too short, must be at least ~w~n', Fmt),
+    format(atom(Status), Fmt,
            [FieldName, C.FieldName.min]).
 valid(FieldName=Value, Status) :-
     constraints(C),
     string_length(Value, L),
     C.FieldName.max < L,
     !,
-    format(atom(Status), '~w is too long, must be at most ~w~n',
+    local('~w is too long, must be at most ~w~n', Fmt),
+    format(atom(Status), Fmt,
            [FieldName, C.FieldName.max]).
 valid(FieldName=Value, Status) :-
     constraints(C),
     \+ re_match(C.FieldName.regex, Value),
     !,
-    format(atom(Status), '~w must have blah blah ~w~n',
-           [FieldName, C.FieldName.max]).
+    format(atom(Status), '~w~n', [C.FieldName.warn]).
 valid(_=_, ok).
 
 % TODO handle passwd2 special case

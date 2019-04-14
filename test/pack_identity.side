@@ -1,0 +1,147 @@
+{
+  "id": "5ac0e6f5-0903-43b8-83ab-2136997c041a",
+  "version": "2.0",
+  "name": "pack_identity",
+  "url": "",
+  "tests": [{
+    "id": "e1daa7b8-3b66-4cac-a773-7c54a0b0f66b",
+    "name": "homepageloads",
+    "commands": [{
+      "id": "e292e28a-6486-4178-b949-dedbdf561160",
+      "comment": "",
+      "command": "click",
+      "target": "css=h1",
+      "targets": [
+        ["css=h1", "css:finder"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'Home Page')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "e7433a81-14fa-4199-92a6-0995266aa0ff",
+      "comment": "home page loads and shows the words Home Page",
+      "command": "assertElementPresent",
+      "target": "css=h1",
+      "targets": [
+        ["css=h1", "css:finder"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'Home Page')]", "xpath:innerText"]
+      ],
+      "value": "Home Page"
+    }]
+  }, {
+    "id": "d9f06fb3-1cda-40f7-a332-b4750a92e577",
+    "name": "mustlogin",
+    "commands": [{
+      "id": "9e902179-12aa-4a2c-8016-93857e043734",
+      "comment": "",
+      "command": "verifyText",
+      "target": "css=h1",
+      "targets": [
+        ["css=h1", "css:finder"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'Home Page')]", "xpath:innerText"]
+      ],
+      "value": "Home Page"
+    }, {
+      "id": "f691f0a7-b2fc-4b26-8368-4a7a4c75a3ca",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=link to secret",
+      "targets": [
+        ["linkText=link to secret", "linkText"],
+        ["css=a", "css:finder"],
+        ["xpath=//a[contains(text(),'link to secret')]", "xpath:link"],
+        ["xpath=//a[contains(@href, '/secret')]", "xpath:href"],
+        ["xpath=//a", "xpath:position"],
+        ["xpath=//a[contains(.,'link to secret')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "3924cb62-1d87-4c5c-8ef3-34ecb776a939",
+      "comment": "",
+      "command": "verifyElementPresent",
+      "target": "linkText=forgot password or user name",
+      "targets": [
+        ["linkText=forgot password or user name", "linkText"],
+        ["css=div:nth-child(6) > a", "css:finder"],
+        ["xpath=//a[contains(text(),'forgot password or user name')]", "xpath:link"],
+        ["xpath=//a[contains(@href, '/login/forgot')]", "xpath:href"],
+        ["xpath=//div[5]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'forgot password or user name')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "6d72c644-e12d-4c17-9b12-8abaf9d2dc32",
+      "comment": "",
+      "command": "click",
+      "target": "name=uname",
+      "targets": [
+        ["name=uname", "name"],
+        ["css=div:nth-child(3) > input", "css:finder"],
+        ["xpath=//input[@name='uname']", "xpath:attributes"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "cc42290b-9c21-466f-985f-953f62583afe",
+      "comment": "",
+      "command": "click",
+      "target": "name=passwd",
+      "targets": [
+        ["name=passwd", "name"],
+        ["css=div:nth-child(4) > input", "css:finder"],
+        ["xpath=//input[@name='passwd']", "xpath:attributes"],
+        ["xpath=//div[3]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "7c5fb7dc-4f1c-4729-a59b-e6a60a311fd0",
+      "comment": "",
+      "command": "type",
+      "target": "name=uname",
+      "targets": [
+        ["name=uname", "name"],
+        ["css=div:nth-child(3) > input", "css:finder"],
+        ["xpath=//input[@name='uname']", "xpath:attributes"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "annie"
+    }, {
+      "id": "185aaeb0-5c42-4481-9d87-7a89aa389ef2",
+      "comment": "invalid password entry",
+      "command": "type",
+      "target": "name=passwd",
+      "targets": [
+        ["name=passwd", "name"],
+        ["css=div:nth-child(4) > input", "css:finder"],
+        ["xpath=//input[@name='passwd']", "xpath:attributes"],
+        ["xpath=//div[3]/input", "xpath:position"]
+      ],
+      "value": "tacos"
+    }, {
+      "id": "02c7582f-5ace-4332-84a6-0d300ddc190c",
+      "comment": "",
+      "command": "verifyElementPresent",
+      "target": "id=warningarea",
+      "targets": [
+        ["id=warningarea", "id"],
+        ["css=#warningarea", "css:finder"],
+        ["xpath=//div[@id='warningarea']", "xpath:attributes"],
+        ["xpath=//form/div[2]", "xpath:position"],
+        ["xpath=//div[contains(.,'Invalid user or password')]", "xpath:innerText"]
+      ],
+      "value": "Invalid user or password"
+    }]
+  }],
+  "suites": [{
+    "id": "2e1407b2-46df-443c-b279-34e8641b45a4",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["e1daa7b8-3b66-4cac-a773-7c54a0b0f66b"]
+  }],
+  "urls": [],
+  "plugins": []
+}
