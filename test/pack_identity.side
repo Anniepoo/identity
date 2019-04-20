@@ -2,7 +2,7 @@
   "id": "5ac0e6f5-0903-43b8-83ab-2136997c041a",
   "version": "2.0",
   "name": "pack_identity",
-  "url": "",
+  "url": "http://localhost:5000/",
   "tests": [{
     "id": "e1daa7b8-3b66-4cac-a773-7c54a0b0f66b",
     "name": "homepageloads",
@@ -33,6 +33,24 @@
     "id": "d9f06fb3-1cda-40f7-a332-b4750a92e577",
     "name": "mustlogin",
     "commands": [{
+      "id": "83f18271-e609-4586-abde-c374ed95f78d",
+      "comment": "",
+      "command": "open",
+      "target": "http://localhost:5000/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "4d420e14-536d-439c-8744-44505d54a9e6",
+      "comment": "",
+      "command": "click",
+      "target": "css=html",
+      "targets": [
+        ["css=html", "css:finder"],
+        ["xpath=//html", "xpath:position"],
+        ["xpath=//html[contains(.,'Preparing to run your test')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
       "id": "9e902179-12aa-4a2c-8016-93857e043734",
       "comment": "",
       "command": "verifyText",
@@ -96,42 +114,31 @@
       ],
       "value": ""
     }, {
-      "id": "7c5fb7dc-4f1c-4729-a59b-e6a60a311fd0",
+      "id": "7590e31f-7843-4390-a4d4-035af476a070",
       "comment": "",
-      "command": "type",
-      "target": "name=uname",
+      "command": "click",
+      "target": "name=submit",
       "targets": [
-        ["name=uname", "name"],
-        ["css=div:nth-child(3) > input", "css:finder"],
-        ["xpath=//input[@name='uname']", "xpath:attributes"],
-        ["xpath=//div[2]/input", "xpath:position"]
+        ["name=submit", "name"],
+        ["css=div:nth-child(7) > input", "css:finder"],
+        ["xpath=//input[@name='submit']", "xpath:attributes"],
+        ["xpath=//div[6]/input", "xpath:position"]
       ],
-      "value": "annie"
+      "value": ""
     }, {
-      "id": "185aaeb0-5c42-4481-9d87-7a89aa389ef2",
-      "comment": "invalid password entry",
-      "command": "type",
-      "target": "name=passwd",
-      "targets": [
-        ["name=passwd", "name"],
-        ["css=div:nth-child(4) > input", "css:finder"],
-        ["xpath=//input[@name='passwd']", "xpath:attributes"],
-        ["xpath=//div[3]/input", "xpath:position"]
-      ],
-      "value": "tacos"
-    }, {
-      "id": "02c7582f-5ace-4332-84a6-0d300ddc190c",
+      "id": "88e3b77e-4c90-4a69-8703-e45a4ca79e79",
       "comment": "",
-      "command": "verifyElementPresent",
-      "target": "id=warningarea",
+      "command": "assertElementPresent",
+      "target": "linkText=forgot password or user name",
       "targets": [
-        ["id=warningarea", "id"],
-        ["css=#warningarea", "css:finder"],
-        ["xpath=//div[@id='warningarea']", "xpath:attributes"],
-        ["xpath=//form/div[2]", "xpath:position"],
-        ["xpath=//div[contains(.,'Invalid user or password')]", "xpath:innerText"]
+        ["linkText=forgot password or user name", "linkText"],
+        ["css=div:nth-child(7) > a", "css:finder"],
+        ["xpath=//a[contains(text(),'forgot password or user name')]", "xpath:link"],
+        ["xpath=//a[contains(@href, '/login/forgot')]", "xpath:href"],
+        ["xpath=//div[6]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'forgot password or user name')]", "xpath:innerText"]
       ],
-      "value": "Invalid user or password"
+      "value": ""
     }]
   }],
   "suites": [{
@@ -142,6 +149,6 @@
     "timeout": 300,
     "tests": ["e1daa7b8-3b66-4cac-a773-7c54a0b0f66b"]
   }],
-  "urls": [],
+  "urls": ["http://localhost:5000/"],
   "plugins": []
 }

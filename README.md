@@ -78,7 +78,6 @@ requiring a role
  * look at doc_server for undocumented publics and bad format
  * add logging of various events
  * add debug/3 calls
- * IP throttle registration & login
  * make sure you're compatible with https://support.1password.com/compatible-website-design/
 
 
@@ -86,6 +85,7 @@ requiring a role
 
  * Check out https://github.com/OWASP/CheatSheetSeries for instrusion safety
  * if you don't use some stuff in login_crypto for remember_me, remove it
+ * IP throttle registration & login
 
 ### Testing
 
@@ -111,6 +111,7 @@ requiring a role
  * validate uname char set to avoid faking via homoglyphs
  * password strength meter
  * Naughty word filtering for usernames
+ * 'late login' - [Welie Web UX Patterns](http://www.welie.com/patterns/showPattern.php?patternID=login) defines late login. We already do this, but don't provide a reason. Add an option in the handler that defines an explanatory message why the user needs to log in. 
  * 2 Factor Authentication
    * SMS based
    * App based (eg with Authy, 1password, etc.)
@@ -150,7 +151,6 @@ It might be best to make a separate pack that does
  * gravatars - move the gravatar/svg-atar functionality to here
  * allows profile image upload
  * display names - separate from user names
- * zwinkies
  * gamification rating system like Stack Overflow
  * and other user management not strictly related to identity.
 
@@ -159,7 +159,7 @@ It might be best to make a separate pack that does
 
 Far down the road, pack(identity) could become one of a family of packs that work together
 
- * more general identity - profiles, display name, gravatar, zwinkies, gamification rating
+ * more general identity - profiles, display name, gravatar, gamification rating
  * auto generated CRUD similar to Rails scaffold
  * 'flash' pattern from rails, where the previous page's 'flash' is available
  * Hasura like 'watch this thing' against a knowledgebase
@@ -168,10 +168,12 @@ Far down the road, pack(identity) could become one of a family of packs that wor
  * CMS
  * store
  * map roi
+ * graph creation tool.
  * threading, up/down voting, moderators, tagging, rate-limits, quote-replying, retweeting, crossposting.
  * naughty word filtering - more general than just usernames
  * sentiment analysis to keep hate off site
  * anti-spam/anti-griefing assistance
+ * customizable window - moodle like draggable content
 
 
 # DONE
