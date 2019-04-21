@@ -10,6 +10,8 @@
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/html_write)).
 :- use_module(library(http/http_session)).
+:- use_module(library(http/js_write)).
+:- use_module(library(http/http_json)).
 
 user:file_search_path(library, '../prolog').
 
@@ -44,5 +46,22 @@ secret_handler(_Request) :-
           h1('Secret Page'),
           [a(href(location_by_id(home)), 'link to home page'),
            a(href(location_by_id(logout)), 'Log Out'),
-           p(\current_user)]).
+           div(id(loadbyajax), 'not yet loaded by ajax'),
+           p(\current_user),
+           \js_script({| javascript(_) ||
+     fetch("/ajax").then(function(response) {
+                             return response.json();
+                         })
+                       .then(function(myJson) {
+                                 document.getElementById("loadbyajax").innerHTML = myJson.displaytext;
+                             });
+              |})
+          ]).
+
+:- http_handler(root(ajax), ajax_handler, [id(ajax), role(user)]).
+
+ajax_handler(_Request) :-
+    reply_json_dict(_{
+                        displaytext: 'AJAX fetched me correctly'
+                    }).
 

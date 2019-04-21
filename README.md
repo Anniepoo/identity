@@ -57,19 +57,10 @@ a walk through of how to set the system up.
 
 ## TODO - many things are yet to do. This is our roadmap
 
-### Basic functionality
-
- * make rest endpoints work, or at least test that they do
- * make sure pengines work
-
 ### Access - Making it easier to use
 
  * add to README a list of everything you can configure - pages, strings, behavior
  * document all
- * make a directive & another expansion that lets app programmer set a prefix as
-requiring a role
- * Add a meta-inclusion that adds unauthorized class to link if user not authorized
- * Add a pengine endpoint that says yes/no an endpoint is authorized
 
 ### Code Quality
 
@@ -93,6 +84,8 @@ requiring a role
  * Try overriding login, registration, and forbidden pages
  * test remember me against changing accounts
  * test mismatched passwords in registration
+ * make rest endpoints work, or at least test that they do
+ * make sure pengines work
 
 ###  Additional login options
 
@@ -123,6 +116,10 @@ requiring a role
    * 'real' Gravatars
    * provide SWISH style svg-atars for those with sessions, logged in or not.
  * option on uname display inclusion that colors non-lower-ascii as a different color to prevent homoglyph spoofing
+ * make a directive & another expansion that lets app programmer set a prefix as
+requiring a role
+ * Add a meta-inclusion that adds unauthorized class to link if user not authorized
+ * Add an ajax endpoint that says yes/no an endpoint is authorized (pengine? naw, ajax)
 
 
 ### Expert system
