@@ -2,6 +2,13 @@
 
 An identity management system for SWI-Prolog.
 
+# TL;DR
+
+cd test/
+swipl test.pl
+?- go.
+browse http://localhost:5000/
+
 # Release 0.2.2
 
 This release has all basic functionality working.
@@ -89,7 +96,7 @@ a walk through of how to set the system up.
 
 ###  Additional login options
 
- * add login via OAuth2
+ * add login via OAuth2  [simple guide to OAuth2 on web page](https://aaronparecki.com/oauth-2-simplified/#roles)
  * Allow 'username is email' - there are no true usernames, the username is just the users email.
  * admin logs in as user mode - to let admins change to being a user to help 'debug' user issues.
  * passwordless - to log in you give email and get a one-time link.
@@ -105,6 +112,7 @@ a walk through of how to set the system up.
  * password strength meter
  * Naughty word filtering for usernames
  * 'late login' - [Welie Web UX Patterns](http://www.welie.com/patterns/showPattern.php?patternID=login) defines late login. We already do this, but don't provide a reason. Add an option in the handler that defines an explanatory message why the user needs to log in. 
+ * COPPA compliance
  * 2 Factor Authentication
    * SMS based
    * App based (eg with Authy, 1password, etc.)
@@ -120,6 +128,7 @@ a walk through of how to set the system up.
 requiring a role
  * Add a meta-inclusion that adds unauthorized class to link if user not authorized
  * Add an ajax endpoint that says yes/no an endpoint is authorized (pengine? naw, ajax)
+ * native app support
 
 
 ### Expert system
@@ -150,6 +159,8 @@ It might be best to make a separate pack that does
  * display names - separate from user names
  * gamification rating system like Stack Overflow
  * and other user management not strictly related to identity.
+ * GDPR compliance / first ttime popup
+
 
 
 # other web design patterns
