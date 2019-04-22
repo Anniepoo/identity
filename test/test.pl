@@ -17,7 +17,8 @@ user:file_search_path(library, '../prolog').
 
 :- use_module(library(identity/identity)).
 :- use_module(library(identity/login_database), [use_default_db/0,
-                                                current_user//0]).
+                                                current_user//0,
+                                                retractall_user_property/2]).
 :- use_module(library(identity/login_static)).
 
 go :-
@@ -64,4 +65,27 @@ ajax_handler(_Request) :-
     reply_json_dict(_{
                         displaytext: 'AJAX fetched me correctly'
                     }).
+
+		 /*******************************
+		 * HEY - If you take this test code and
+		 * build an app using it as a starter,
+                 * that's ok, and reasonable, but
+		 * GET RID OF THIS SECTION
+		 * the test framework uses it to reset
+		 * the user DB between tests
+		 * ******************************/
+
+:- http_handler(root(resetdb), reset_db, [id(resetdb)]).
+
+reset_db(Request) :-
+    % TODO restrict to localhost
+    retractall_user_property(_, _),
+    (   http_in_session(ID)
+    ->  http_close_session(ID)
+    ;   true
+    ),
+    reply_html_page(
+        title('zapped the db'),
+        p('You have truncated the user database')
+    ).
 
