@@ -1,24 +1,57 @@
-:- module(testcondition, [go/0]).
-/** <module>  Integration tests for identity library
+:- module(localauth, [go/0]).
+/** <module>  Simple OAuth2 server to test OAuth2
  *
- * Run these tests from the directory where this file is found
+ * This is a minimal OAuth2 server implementation so you can test
+ * an OAuth2 client.
  *
- * swipl test.pl -g run_tests.
+ * The Authorization provider is, instead of Google or Facebook,
+ * this little application, which I've named "DodgyAuth"
+ *
+ * It happily will validate to an http address.
+ * Saves the hassle of setting up a cert for localhost.
+ *
+ * This is not cryptographic anything. It just implements the basics
+ * of the protocol. DO NOT actually use it for anything but testing your
+ * OAuth2 client works.
+ *
+ * swipl test.pl -g go
+ *
+ * How OAuth2 works:
+ * Alice (user) wants to verify her identity to Bob (application). Both
+ * Alice and Bob trust Carl(OAuth provider).
+ * Bob gives Alice a non secret client ID (Bob's 'name') and a link to
+ * Carl. Alice tells Carl 'it's OK to tell Bob I'm me'.
+ * Carl redirects Alice to Bob, with a token(`auth code`).
+ * Alice gives the `auth code` to Bob. Bob gives Carl
+ * the auth code, and Carl gives Bob back an `access token`.
+ * Now Bob can use the access token to get permission to
+ * see Alice's stuff on some third party.
+ *
+ * Of course the third party could be Bob's own user login system.
+ *
+The
+ and carl hands
+ * her a token. Alice gives the token to Bob. Bob gives the token to
+
+[Handy OAuth2
+ * explainer](https://aaronparecki.com/oauth-2-simplified/#roles)
+ *
+ * Your client ID is 42 for sketchyapp
+ * The scope is defined by the provider. DodgyAuth displays the scope
+ * but doesn't use it for anything.
+ *
+ *
+ *
+ *
  */
 
 :- use_module(library(http/thread_httpd)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/html_write)).
-:- use_module(library(http/http_session)).
 :- use_module(library(http/js_write)).
 :- use_module(library(http/http_json)).
 
 user:file_search_path(library, '../prolog').
-
-:- use_module(library(identity/identity)).
-:- use_module(library(identity/login_database), [use_default_db/0,
-                                                current_user//0,
-                                                retractall_user_property/2]).
 :- use_module(library(identity/login_static)).
 
 go :-
@@ -27,25 +60,20 @@ go :-
     use_default_db,
     http_set_session_options(
         [ create(noauto),
-          timeout(1800)  % half hour sessions
+          timeout(60)  % half hour sessions
         ]),
-    http_server(http_dispatch, [port(5000)]).
+    http_server(http_dispatch, [port(6666)]).
 go :-
     writeln('Need to be on SWI-Prolog 8.1.0 or better, you are on'),
     version.
 
-:- http_handler(root(.), root_handler, [id(home)]).
-:- http_handler(root(secret), secret_handler, [id(secret), role(user)]).
+:- http_handler(root(loginform), login_form_handler, [id(loginform)]).
 
-root_handler(_Request) :-
+login_form_handler(_Request) :-
       reply_html_page(
-          h1('Home Page'),
-          a(href(location_by_id(secret)), 'link to secret')).
-
-secret_handler(_Request) :-
-      reply_html_page(
-          h1('Secret Page'),
-          [a(href(location_by_id(home)), 'link to home page'),
+          title('Login with DodgyAuth!'),
+          [h1('Login with DodgyAuth'),
+           a(href('http://localhost:5000), 'Login as Alice'),
            a(href(location_by_id(logout)), 'Log Out'),
            div(id(loadbyajax), 'not yet loaded by ajax'),
            p(\current_user),
@@ -78,7 +106,7 @@ ajax_handler(_Request) :-
 :- http_handler(root(resetdb), reset_db, [id(resetdb)]).
 
 reset_db(Request) :-
-    member(peer(ip(127,0,0,1)), Request),
+    % TODO restrict to localhost
     retractall_user_property(_, _),
     (   http_in_session(ID)
     ->  http_close_session(ID)
