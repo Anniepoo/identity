@@ -112,10 +112,18 @@ a walk through of how to set the system up.
  * password strength meter
  * Naughty word filtering for usernames
  * 'late login' - [Welie Web UX Patterns](http://www.welie.com/patterns/showPattern.php?patternID=login) defines late login. We already do this, but don't provide a reason. Add an option in the handler that defines an explanatory message why the user needs to log in. 
- * COPPA compliance
+ * compliance
+   * COPPA compliance (assert yer over 18)
+   * EU GDPR
+   * this site uses cookies
+   * agree to TOS
+   * adult content warning
  * 2 Factor Authentication
    * SMS based
    * App based (eg with Authy, 1password, etc.)
+   * Google recaptcha3 based
+   * Phone QR code scanning (suggested by ttmrichter, says it's common in China)
+
 
 ### Additional Other Functionality
 
@@ -129,7 +137,6 @@ requiring a role
  * Add a meta-inclusion that adds unauthorized class to link if user not authorized
  * Add an ajax endpoint that says yes/no an endpoint is authorized (pengine? naw, ajax)
  * native app support
-
 
 ### Expert system
 

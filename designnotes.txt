@@ -1,3 +1,5 @@
+This is largely retained forv historical reasons, see the README
+
 # Issues
 
 dispatch
