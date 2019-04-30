@@ -125,9 +125,11 @@ a walk through of how to set the system up.
    * adult content warning
  * 2 Factor Authentication
    * SMS based
-   * App based (eg with Authy, 1password, etc.)
-   * Google recaptcha3 based
-   * Phone QR code scanning (suggested by ttmrichter, says it's common in China)
+   * App based (eg with Authy, 1password, etc.), aka TOTP (Time based One Time Password)
+   * Google recaptcha3 based  [Google docs for recaptcha2 & 3](https://developers.google.com/recaptcha/intro)
+   * Google recaptcha2 based  [Sample PHP code](https://codeforgeek.com/google-recaptcha-tutorial/)
+   * Phone QR code scanning (suggested by ttmrichter, says it's common in China. see section below)
+   * [Fido U2F standard apps](https://help.github.com/en/articles/configuring-two-factor-authentication#configuring-two-factor-authentication-using-fido-u2f)
 
 
 ### Additional Other Functionality
@@ -194,6 +196,36 @@ Far down the road, pack(identity) could become one of a family of packs that wor
  * sentiment analysis to keep hate off site
  * anti-spam/anti-griefing assistance
  * customizable window - moodle like draggable content
+
+# 2FA design note
+
+question for ttmrichter about QR code.
+
+You mentioned one night in ##prolog that @FA using QR codes is common in
+
+China. 
+
+I'm wondering if this is the same method I know of as TOTP, or 'app' based.
+
+
+Eg, here's how I log into my work stuff:
+
+1. I install 'authy' app on my phone
+2. I go to the workstuff.com website and log in, and in profile choose 'set up 2FA'
+3. workstuff.com shows me a QR code, which I scan with Authy app. I never have to do this again.
+4. Later I want to log into workstuff.com.  I do my normal 1FA uname/pw and am taken to a second page that asks me to type in a number.
+5. I pull up Authy on my phone and it shows a number and a countdown of seconds of validity remaining.
+6. I type in the number and submit, and it takes me to home page.
+
+Or do you mean:
+
+1. I install some app on phone, call it QRAuth
+2. I enable QR based 2FA on playstuff.com
+3. I want to log in to playstuff.com  - I use usual uname/pw and they take me to a page with a QR code. 
+4.I scan the QR code with my phone, and am now logged in.
+
+I guess the UX is that the page showing the QR code keeps a websocket, or polls
+to know when to change, or there's an 'ok, I did that' button to take you to home page.
 
 
 # DONE
