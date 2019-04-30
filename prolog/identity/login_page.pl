@@ -133,7 +133,7 @@ do_login_handler(Request) :-
         authenticate_user(UserName, Password, Status),
         do_actual_login(Status, SuccessURL, UserName, Request).
 do_login_handler(_Request) :-
-      setting(identity:sytle, Style),
+      setting(identity:style, Style),
       reply_html_page(
           Style,
           title(\local('improper login')),
