@@ -97,7 +97,12 @@ a walk through of how to set the system up.
 ###  Additional login options
 
  * add login via OAuth2  [simple guide to OAuth2 on web page](https://aaronparecki.com/oauth-2-simplified/#roles)
- * Allow 'username is email' - there are no true usernames, the username is just the users email.
+ * OAuth2 is the underlying protocol to get resource permission. Providers build "login with" atop it
+   * [Login with Twitter](https://developer.twitter.com/en/docs/twitter-for-websites/log-in-with-twitter/guides/implementing-sign-in-with-twitter.html)
+   * [Login with Google](https://developers.google.com/identity/sign-in/web/sign-in)
+ * Allow 'username is email' - 
+   * there are no true usernames, the username is just the users email.
+   * accept the username or the email
  * admin logs in as user mode - to let admins change to being a user to help 'debug' user issues.
  * passwordless - to log in you give email and get a one-time link.
 
