@@ -5,9 +5,6 @@
           ]).
 /** <module> Tools for crypto work on login cookies
  *
- *  I think token_uname and make_login_cookie are
-  * now dead, but will be needed for remember_me
- *
  * Notice that you can't just compare if two hashes unify.
  * See authenticate_user/2 in login_database for the proper
  * way to do it.
@@ -87,3 +84,14 @@ make_login_cookie(UName, Cookie) :-
       string_codes(CipherText, CipherTextCodes),
       append(Nonce, CipherTextCodes, TokenList),
       hex_bytes(Cookie, TokenList).
+
+
+
+
+
+
+
+
+
+
+

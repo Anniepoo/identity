@@ -35,3 +35,5 @@ local(X, X).
            "Name of the style to apply to identity pages").
 :- setting(identity:require_activation_email, boolean, false,
            "true = require activation email, false = not required").
+:- setting(identity:rememberme_duration, integer, 2_592_000,
+           "Duration in seconds rememberme lasts. Default 30 days.").

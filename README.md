@@ -100,6 +100,7 @@ a walk through of how to set the system up.
  * OAuth2 is the underlying protocol to get resource permission. Providers build "login with" atop it
    * [Login with Twitter](https://developer.twitter.com/en/docs/twitter-for-websites/log-in-with-twitter/guides/implementing-sign-in-with-twitter.html)
    * [Login with Google](https://developers.google.com/identity/sign-in/web/sign-in)
+   * There is an OpenIDConnect solution in SWI-Prolog in the form of pack [google_client.pl(http://www.swi-prolog.org/pldoc/doc/_SWI_/pack/googleclient/prolog/google_client.pl).
  * Allow 'username is email' - 
    * there are no true usernames, the username is just the users email.
    * accept the username or the email
@@ -219,10 +220,12 @@ Eg, here's how I log into my work stuff:
 
 Or do you mean:
 
-1. I install some app on phone, call it QRAuth
+1. I install some app on phone, call it QRAuth (this could just be a QR code reader)
 2. I enable QR based 2FA on playstuff.com
+3. playstuff.com shows me a QR code. I visit this from my phone's app and am handed a cookie, which is
+my credentials.
 3. I want to log in to playstuff.com  - I use usual uname/pw and they take me to a page with a QR code. 
-4.I scan the QR code with my phone, and am now logged in.
+4. I scan the QR code with my phone, and am now logged in.
 
 I guess the UX is that the page showing the QR code keeps a websocket, or polls
 to know when to change, or there's an 'ok, I did that' button to take you to home page.

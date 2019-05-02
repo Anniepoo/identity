@@ -21,13 +21,15 @@ http:location(login, root(login), [priority(-100)]).
 :- ensure_loaded(library(identity/login_email)).
 :- use_module(library(identity/login_database), [user_property/2]).
 :- ensure_loaded(library(identity/login_forgot)).
+:- use_module(library(identity/login_remember), [remember_me_expand/3]).
 
 		 /*******************************
 		 *            EXPAND		*
 		 *******************************/
 
-% order is important, need user field in second
+% order is important, need user field in second and third
 :- http_request_expansion(user_expand, 100).
+:- http_request_expansion(remember_me_expand, 150).
 :- http_request_expansion(role_based_authorization_expand, 200).
 
 %!  user_expand(+Request0, -Request, +Options) is semidet.

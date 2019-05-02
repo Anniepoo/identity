@@ -25,7 +25,7 @@
  * Usage:
  *   To secure a REST endpoint, extract the csrf parameter
  *   from the request
- *   and pass it and the REST endpoint id to chekck_csrf/2.
+ *   and pass it and the REST endpoint id to check_csrf/2.
  *   You should also add the normal role authorization.
  *
  *   Add csrf_field//1 to the form, passing the id of the REST handler

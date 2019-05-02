@@ -5,6 +5,7 @@
           login_password_field//0,
           login_remember_me_check//0,
           login_submit//0,
+          login_remember_submit//0,
           login_warning//0,
           login_register_link//0,
           do_actual_login/4]).
@@ -28,6 +29,8 @@
 :- use_module(library(identity/login_database)).
 :- ensure_loaded(library(identity/login_register)).
 :- use_module(library(identity/customize)).
+:- use_module(library(http/http_header)).
+:- use_module(library(identity/login_remember), [remember_cookie_contents/2]).
 
 :- http_handler(login(.), login_form_handler,
                 [id(login_form), priority(-100)]).
@@ -88,13 +91,29 @@ login_password_field -->
                required])).
 
 login_remember_me_check -->
-    html(input([type(checkbox), name(rememberme)])).
+    html(input([type(checkbox), name(rememberme), value(yes)])).
 
 login_submit -->
     {  local('Log In', Submit) },
     html(input([type(submit),
-                name(submit),
+                name(loginbutton),
                 value(Submit)])).
+
+login_remember_submit -->
+    {  local('Log in until I close my browser', Submit),
+       setting(identity:rememberme_duration, DurSecs),
+       Days is round(DurSecs / 86400.0),
+       local('Log me in for ~w days', Local),
+       format(atom(SubmitDays), Local , [Days])
+    },
+    html([
+          input([type(submit),
+                name(loginbutton),
+                value(Submit)]),
+          input([type(submit),
+               name(rememberloginbutton),
+               value(SubmitDays)])
+         ]).
 
 login_forgot_password -->
       html(a(href(location_by_id(forgot)),
@@ -111,7 +130,8 @@ login_form_page -->
                    \login_password_field]),
               div([\login_remember_me_check, \local('Remember me')]),
               div(\login_forgot_password),
-              div(\login_submit)
+              div(\login_submit),
+              div(\login_remember_submit)
           ])).
 
 login_register_link -->
@@ -153,17 +173,16 @@ do_login_handler(_Request) :-
 do_actual_login(ok, SuccessURL, UserName, Request) :-
       http_open_session(_SessionId, []),
       http_session_assert(user(UserName)),
-      http_redirect(see_other, SuccessURL, Request).
-        /*  TODO - make the 'remember me' cookie if remember me checked
-            make_login_cookie(UserName, Cookie), % TODO now only send cookie if
-            format('Status: 302 Found~n'),       %
-            format('Location: ~w~n', [SuccessURL]),
-            % session cookie, lives until browser exits
-            % however the cookie itself contains an expiry
-            % as well
-            format('Set-Cookie: login=~w; Path=/~n', [Cookie]),
-            format('Content-type: text/plain~n~n')
-        */
+      (   wants_rememberme(Request)
+      ->
+          remember_cookie_contents(UserName, Contents),
+          http_status_reply(see_other(SuccessURL),
+                        current_output,
+                        ['Set-Cookie'(Contents)],
+                        _)
+      ;
+          http_redirect(see_other, SuccessURL, Request)
+      ).
 do_actual_login(Status, SuccessURL, _UserName, Request) :-
       Status \= ok,
       http_link_to_id(login_form,
@@ -173,6 +192,13 @@ do_actual_login(Status, SuccessURL, _UserName, Request) :-
                       ],
                       HREF),
       http_redirect(see_other, HREF, Request).
+
+wants_rememberme(Request) :-
+      member(search(S), Request),
+      member(rememberme=yes, S).
+wants_rememberme(Request) :-
+      member(search(S), Request),
+      member(rememberloginbutton=_, S).
 
 improper_login -->
       html(
