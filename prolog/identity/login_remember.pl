@@ -94,3 +94,5 @@ remember_cookie_contents(UserName, Contents) :-
 
 % TODO - what should default state be for 'remember me?'
 % Use the 'two buttons solution'
+
+% TODO add login_reason to handler options
