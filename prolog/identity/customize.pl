@@ -37,3 +37,5 @@ local(X, X).
            "true = require activation email, false = not required").
 :- setting(identity:rememberme_duration, integer, 2_592_000,
            "Duration in seconds rememberme lasts. Default 30 days.").
+:- setting(identity:rememberme_secure, oneof(['', 'Secure; ']), 'Secure; ',
+           "Set to '' to be able to run remember me via http (SECURITY - DEV ONLY)").

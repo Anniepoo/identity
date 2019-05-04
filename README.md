@@ -110,6 +110,8 @@ a walk through of how to set the system up.
 ### Additional items on login/registration pages
 
  * Registration and/or login time CAPTCHA
+   * Google recaptcha3 based  [Google docs for recaptcha2 & 3](https://developers.google.com/recaptcha/intro)
+   * Google recaptcha2 based  [Sample PHP code](https://codeforgeek.com/google-recaptcha-tutorial/) 
  * 'remember me' - persistent cookie
    * make it work
    * expire remember me if user logs out
@@ -127,8 +129,6 @@ a walk through of how to set the system up.
  * 2 Factor Authentication
    * SMS based
    * App based (eg with Authy, 1password, etc.), aka TOTP (Time based One Time Password)
-   * Google recaptcha3 based  [Google docs for recaptcha2 & 3](https://developers.google.com/recaptcha/intro)
-   * Google recaptcha2 based  [Sample PHP code](https://codeforgeek.com/google-recaptcha-tutorial/)
    * Phone QR code scanning (suggested by ttmrichter, says it's common in China. see section below)
    * [Fido U2F standard apps](https://help.github.com/en/articles/configuring-two-factor-authentication#configuring-two-factor-authentication-using-fido-u2f)
 
@@ -142,7 +142,8 @@ a walk through of how to set the system up.
  * option on uname display inclusion that colors non-lower-ascii as a different color to prevent homoglyph spoofing
  * make a directive & another expansion that lets app programmer set a prefix as
 requiring a role
- * Add a meta-inclusion that adds unauthorized class to link if user not authorized
+ * Add a meta-inclusion \role_a that adds unauthorized class to link if user not logged in, or would
+not be authorized (eg they are not role(admin) and page is role(admin))
  * Add an ajax endpoint that says yes/no an endpoint is authorized (pengine? naw, ajax)
  * native app support
 

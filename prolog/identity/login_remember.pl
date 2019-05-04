@@ -66,16 +66,26 @@ valid_remember_me_cookie(Request, User) :-
 remember_cookie_contents(UserName, Contents) :-
     make_login_cookie(UserName, Token),
     setting(identity:rememberme_duration, DurSecs),
+    get_time(Now),
+    ExpireTS is floor(Now + DurSecs),
+    http_timestamp(ExpireTS, Expires),
+    setting(identity:rememberme_secure, Secure),
     (   http_session_option(samesite(lax))
     ->
-        format(atom(Contents), 'login=~w; Max-Age=~d; SameSite=Lax; Path=/',
-           [Token, DurSecs])
+        format(atom(Contents), 'login=~w; Expires=~w; SameSite=Lax; Version=1; ~wHttpOnly; Path=/',
+           [Token, Expires, Secure])
     ;
-        format(atom(Contents), 'login=~w; Max-Age=~d; SameSite=Strict; Path=/',
-           [Token, DurSecs])
+        format(atom(Contents), 'login=~w; Expires=~w; SameSite=Strict; Version=1; ~wHttpOnly; Path=/',
+           [Token, Expires, Secure])
     ).
 
-% Note - use http_status_reply from library(http/http_header)
+% TODO - add the field  Secure;
+% need to set up https to make tthat work
+%
+%
+% TODO - make the cookie name settable (don't forget logout when doing
+% this)
+%
 % TODO add expire to the cookie itself, this is a session cookie
 %
         /*  TODO - make the 'remember me' cookie if remember me checked

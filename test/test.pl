@@ -21,7 +21,10 @@ user:file_search_path(library, '../prolog').
                                                 retractall_user_property/2]).
 :- use_module(library(identity/login_static)).
 
+:- use_module(library(settings)).
+
 go :-
+    load_settings('settings.db'),
     current_prolog_flag(version, X),
     X >= 80100,
     use_default_db,

@@ -180,16 +180,11 @@ do_login_handler(_Request) :-
           title(\local('improper login')),
           \improper_login).
 
-% TODO this is public, pldoc it
-% TODO Let Jan know - throwing is awkward for making links that
-% are disabled/invisible if the user can't access them.
+% TODO do_actual_login is public, pldoc it
+%  add a \role_a for links that are disabled/invisible if the user can't
+%  access them.
 %
-%  TODO check that this can be overridden
-%
-% TODO move ERROR section to it's own module and update README.md
-%
-% TODO make rest endpoints work, or at least test that they do
-% make sure pengines work
+
 do_actual_login(ok, SuccessURL, UserName, Request) :-
       http_open_session(_SessionId, []),
       http_session_assert(user(UserName)),
@@ -198,11 +193,10 @@ do_actual_login(ok_remember, SuccessURL, UserName, _Request) :-
       http_open_session(_SessionId, []),
       http_session_assert(user(UserName)),
       remember_cookie_contents(UserName, Contents),
-      http_status_reply(see_other(SuccessURL),
-      %    see_other('http://localhost:5000/secret'),
-                        current_output,
-                       ['Set-Cookie'(Contents)], % []  DEBUGGING
-                        _).
+      format('Status: 303 See Other\r\n'),
+      format('Content-type: text/plain\r\n'),
+      format('Set-Cookie: ~w\r\n', [Contents]),
+      format('Location: ~w\r\n\r\n', [SuccessURL]).
 do_actual_login(Status, SuccessURL, _UserName, Request) :-
       Status \= ok,
       Status \= ok_remember,
@@ -219,13 +213,7 @@ new_status_if_remembering(ok, _, Button, ok_remember) :-
       Button \= notthatbutton.
 new_status_if_remembering(Status, _, _, Status).
 
-wants_rememberme(Request) :-
-      member(search(S), Request),
-      member(rememberme=yes, S).
-wants_rememberme(Request) :-
-      member(search(S), Request),
-      member(rememberloginbutton=_, S).
-
+% TODO make it possible to override this
 improper_login -->
       html(
           div(class('improper-login'),

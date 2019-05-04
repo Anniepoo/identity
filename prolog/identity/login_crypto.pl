@@ -71,11 +71,19 @@ create_crypto_key_file :-
         close(Stream)
     ).
 
-
+%!   make_login_cookie(+UName:atom, -Cookie:string) is semidet
+%
+%   Make the contents (a string of hex) of a persistent login cookie
+%   using:
+%
+%       * the passed in user name
+%       * the rememberme_duration
+%       * a secret generated and stored in file
 make_login_cookie(UName, Cookie) :-
       www_form_encode(URLEncodedUName, UName),
       get_time(Now),
-      Expires is floor(Now) + 86400,
+      setting(identity:rememberme_duration, DurSecs),
+      Expires is floor(Now + DurSecs),
       get_crypto_key(Key),
       atomics_to_string([URLEncodedUName, "/", Expires], PlainText),
       crypto_n_random_bytes(12, Nonce),
@@ -85,7 +93,9 @@ make_login_cookie(UName, Cookie) :-
       append(Nonce, CipherTextCodes, TokenList),
       hex_bytes(Cookie, TokenList).
 
-
+% TODO - expert system should mmake sure production gets a universal key
+% on all machines
+%
 
 
 

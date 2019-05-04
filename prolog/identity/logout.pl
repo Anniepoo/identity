@@ -17,5 +17,14 @@ logout_handler(Request) :-
         [ referer(Return, [default(Redirect)])   % TODO check this
         ]),
     http_session_retractall(user(_User)),
+    ignore((
+        http_in_session(SessionID),
+        http_close_session(SessionID)
+    )),
+    format('Set-Cookie: login=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax; Version=1; HttpOnly; Path=/\r\n'),
     http_redirect(see_other, Return, Request).
 % TODO expire remember_me cookie on logout
+
+
+% TODO at the moment we destroy sessions on logout.
+% users running auto created sessions should
