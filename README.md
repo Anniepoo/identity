@@ -68,6 +68,7 @@ a walk through of how to set the system up.
 
  * add to README a list of everything you can configure - pages, strings, behavior
  * document all
+ * logout kills session. We should check if we're auto-creating sessions or put on a setting
 
 ### Code Quality
 
@@ -77,7 +78,6 @@ a walk through of how to set the system up.
  * add logging of various events
  * add debug/3 calls
  * make sure you're compatible with https://support.1password.com/compatible-website-design/
-
 
 ### Security and Reliability
 
