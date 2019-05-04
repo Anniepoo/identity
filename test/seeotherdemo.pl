@@ -18,13 +18,12 @@ go :-
     writeln('Need to be on SWI-Prolog 8.1.0 or better, you are on'),
     version.
 
-
-:- http_handler(root(.), root_handler, [id(home)]).
+:- http_handler(root(.), manual_handler, [id(home)]).
 :- http_handler(root(foo), foo_handler, [id(foo)]).
 
 root_handler(_Request) :-
       http_status_reply(
-          see_other('http://localhost:9000/foo'),
+          moved('http://localhost:9000/foo'),
                         current_output,
                  [], %       ['Set-Cookie'(Contents)],   DEBUGGING
                         _).
@@ -33,3 +32,10 @@ foo_handler(_Request) :-
        reply_html_page(
            title(foo),
            h1('the foo page')).
+
+manual_handler(_Request) :-
+        format('Status: 303 See Other~n'),
+        format('Content-type: text/plain~n'),
+        format('Location: http://localhost:9000/foo~n~n'),
+        format('Hello World!~n'),
+        close(current_output).
