@@ -12,6 +12,7 @@
 :- use_module(library(http/http_session)).
 :- use_module(library(http/js_write)).
 :- use_module(library(http/http_json)).
+:- use_module(library(http/http_ssl_plugin)).
 
 user:file_search_path(library, '../prolog').
 
@@ -31,6 +32,10 @@ go :-
     http_set_session_options(
         [ create(noauto),
           timeout(1800)  % half hour sessions
+       %   ,ssl([
+        %      certificate_file('/etc/letsencrypt/live/partyserver.rocks/cert.pem'),
+         %       key_file('/etc/letsencrypt/live/partyserver.rocks/privkey.pem')
+          %                ])
         ]),
     http_server(http_dispatch, [port(5000)]).
 go :-

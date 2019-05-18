@@ -167,5 +167,8 @@ I intend to add ajax form verification at some point.
 
 ## REST endpoints
 
-These are not yet addressed. 
+REST endpoints only need the appropriate role in the http_handler options.
+
+Pengines haven't been addressed yet.
+
 

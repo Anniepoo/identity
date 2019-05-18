@@ -31,6 +31,7 @@
 :- use_module(library(identity/login_crypto)).
 :- use_module(library(http/http_session)).
 :- use_module(library(http/http_dispatch)).
+:- use_module(library(http/http_header)).
 
 %!  remember_me_expand(+Request0, -Request, +Options) is semidet.
 %

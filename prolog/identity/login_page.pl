@@ -120,6 +120,8 @@ login_forgot_password -->
       html(a(href(location_by_id(forgot)),
              [\local('forgot password or user name')])).
 
+% TODO set up the login form page to have only the two button solution
+%
 login_form_page -->
     html(\login_form([
               \login_hidden_referer,

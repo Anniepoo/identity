@@ -57,6 +57,22 @@ distributed with `package-http`, part of **SWI-Prolog**.
 The directory containing this file should also contain a SETUP.md file. This contains
 a walk through of how to set the system up.
 
+## Development
+
+To do meaningful development you need to be running https and be visible to the outside world.
+
+[Writeup how to make your local server visible on the web](https://cutebouncingbunnies.wordpress.com/2014/01/02/how-to-run-a-server-on-your-desktop-using-ssh/)
+
+(If you need a server to do dev on this talk to Annie)
+
+You will then have to terminate TLS on the public server. TODO
+
+Forward your machine to the public machine
+
+ssh -R 0.0.0.0:8866:localhost:5000 -N anniepoo@partyserver.rocks
+
+Do something I haven't figured out to get http -> http there
+
 ## Known Issues
 
  * BUG - click the secret link on the homepage. Login page comes up. After logging in, you don't go to the secret, you go home.
@@ -78,6 +94,7 @@ a walk through of how to set the system up.
  * add logging of various events
  * add debug/3 calls
  * make sure you're compatible with https://support.1password.com/compatible-website-design/
+ * Run page against [lighthouse tool](https://chrome.google.com/webstore/detail/lighthouse/blipmdconlkpinefehnmjammfjpmpbjk)
 
 ### Security and Reliability
 
@@ -101,11 +118,27 @@ a walk through of how to set the system up.
    * [Login with Twitter](https://developer.twitter.com/en/docs/twitter-for-websites/log-in-with-twitter/guides/implementing-sign-in-with-twitter.html)
    * [Login with Google](https://developers.google.com/identity/sign-in/web/sign-in)
    * There is an OpenIDConnect solution in SWI-Prolog in the form of pack [google_client.pl(http://www.swi-prolog.org/pldoc/doc/_SWI_/pack/googleclient/prolog/google_client.pl).
+   * Login using Github
+   * Consider either using [login-with](https://login-with.com/) or just "porting" it.
  * Allow 'username is email' - 
    * there are no true usernames, the username is just the users email.
    * accept the username or the email
  * admin logs in as user mode - to let admins change to being a user to help 'debug' user issues.
  * passwordless - to log in you give email and get a one-time link.
+ * The [auth0.com](https://auth0.com/docs/api/authentication#introduction) APIs are useful for ideas
+ * OFA via QR code.
+   * User signs in normally the first time
+   * User pairs phone by scanning QR code with QR reader on phone and getting persistent QR auth cookie with signed token(UName, Expires).
+   * Use this to [make a QR code](https://developers.google.com/chart/infographics/docs/qr_codes).
+   * User now visits site to log in.
+   * They are shown a QR code with signed token(RandomNumberA, Expires).
+   * Every 5  sec the page polls, and is sent one of
+     * 'no'
+     * a new QR code (if the old one will expire soon), 
+     * a redirect URL with a signed token(RandomNumberA, Expires). 
+   * User scans QR code with a QR reader and visits URL. 
+   * If token hasn't expired, and phones cookie hasn't expired, we map RandomNumberA to UName locally.
+   * the next 5 sec poll then is sent the redirect URL with signed token(RandomNumberA, Expires). 
 
 ### Additional items on login/registration pages
 
@@ -121,7 +154,7 @@ a walk through of how to set the system up.
  * Naughty word filtering for usernames
  * 'late login' - [Welie Web UX Patterns](http://www.welie.com/patterns/showPattern.php?patternID=login) defines late login. We already do this, but don't provide a reason. Add an option in the handler that defines an explanatory message why the user needs to log in. 
  * compliance
-   * COPPA compliance (assert yer over 18)
+   * COPPA compliance (13/18, not 'inviting falsification')   https://www.internetlegalattorney.com/coppa-compliance-laws/
    * EU GDPR
    * this site uses cookies
    * agree to TOS
@@ -146,6 +179,7 @@ requiring a role
 not be authorized (eg they are not role(admin) and page is role(admin))
  * Add an ajax endpoint that says yes/no an endpoint is authorized (pengine? naw, ajax)
  * native app support
+ * phone based password recovery
 
 ### Expert system
 
@@ -175,9 +209,9 @@ It might be best to make a separate pack that does
  * display names - separate from user names
  * gamification rating system like Stack Overflow
  * and other user management not strictly related to identity.
- * GDPR compliance / first ttime popup
-
-
+ * GDPR compliance / first time popup
+ * All this should cooperate with hCard and microformats. See issue #2 and #3, and design phase should look for standards for all these.
+ * Legal check expert system
 
 # other web design patterns
 
