@@ -47,12 +47,12 @@ go :-
 
 root_handler(_Request) :-
       reply_html_page(
-          h1('Home Page'),
+          title('Home Page'),
           a(href(location_by_id(secret)), 'link to secret')).
 
 secret_handler(_Request) :-
       reply_html_page(
-          h1('Secret Page'),
+          title('Secret Page'),
           [a(href(location_by_id(home)), 'link to home page'),
            a(href(location_by_id(logout)), 'Log Out'),
            div(id(loadbyajax), 'not yet loaded by ajax'),
