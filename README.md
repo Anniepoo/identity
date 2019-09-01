@@ -73,6 +73,13 @@ ssh -R 0.0.0.0:8866:localhost:5000 -N anniepoo@partyserver.rocks
 
 Do something I haven't figured out to get http -> http there
 
+## Development documentation
+
+I'm finding pack(identity) requires more design work up front than the usual thing. So I'm making sure all the research ends up in a single, organized location.
+
+Before building something, design it using the wiki on github. The wiki is where all 'research' info should go.
+
+
 ## Known Issues
 
  * BUG - click the secret link on the homepage. Login page comes up. After logging in, you don't go to the secret, you go home.

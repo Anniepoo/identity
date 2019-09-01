@@ -1,0 +1,8 @@
+Ok. So I’d forgotten the nuances of CSRF and cookies, so sharing some points here regarding token persistence:1. Don’t store JWT tokens in cookies because CSRF attacks are possible. CSRF is when tanmais-evil-website.com submits a GET/POST request to bank.com/pay?to=tanmai.
+ - Cookies will get automatically sent
+ - CORS policies will not help because a form submit method automatically uses POST and the browser does not check for CORS policies when you use a form submit
+2. Don’t store JWT tokens in localstorage because any 3rd party script or XSS attack (some submits javascript in your website’s comment input) can access it.The solution:
+- Store a refreshtoken as a cookie
+- Use a /get-jwt-from-refreshtoken endpoint that uses the cookie to return a JSON payload that contains the JWT
+ - Note that although a CSRF attack can actually submit to this endpoint, the attacker can’t access the JSON response that contains the JWT so it’s not a problem
+- Keep the JWT token in memory and send it as an HTTP header in API callsI was confused for a long time as to why a cookie with a sensible CORS policy is not enough for JWT in cookies. The answer is that CORS policies cannot prevent HTML form submits.

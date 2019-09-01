@@ -18,7 +18,8 @@ current_accoutn (is this an account?)
 profile in session
 call to persist profile change
 
-"show password"
+"show password" check - show the password instead of the dots
+
 Instead of 'stay signed in' (remember me) check, just set by default?
 
 # Dispatch
@@ -107,6 +108,12 @@ you fully understand the implications and consequences of doing so.
 Maybe provide a link with more information about the concerns of OAuth.
 Stuff about Google tracking, Cambridge Analytica, etc.
 
+Also a note that this is low on priority because of Google transphobia.
+
+Using https://github.com/lipp/login-with would be more maintainable.
+But introduce nodejs into the stack.
+
+
 # Compliance
 
 comply with:
@@ -193,3 +200,6 @@ HTTP/1.1 302 Found
 Location: http://www.iana.org/domains/example/
 
 https://groups.google.com/forum/#!searchin/swi-prolog/status$20code|sort:date/swi-prolog/FwqMhRaxieg/l2uX7v4HCgAJ
+
+
+
