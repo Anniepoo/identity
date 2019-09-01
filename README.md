@@ -4,10 +4,10 @@ An identity management system for SWI-Prolog.
 
 # TL;DR
 
-cd test/
-swipl test.pl
-?- go.
-browse http://localhost:5000/
+    cd test/
+    swipl test.pl
+    ?- go.
+    browse http://localhost:5000/
 
 # Release 0.2.2
 
