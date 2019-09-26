@@ -15,6 +15,7 @@
 :- use_module(library(http/html_head)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_parameters)).
+:- use_module(library(identity/login_advisor_page)).
 
 :- dynamic adviser_running/0.
 
@@ -31,7 +32,8 @@
 run_advisor :-
     asserta(adviser_running),
     http_absolute_location(login(advisor), URL, []),
-    www_open_url(URL).
+    format('Open advisor page at %w on your local server (probably http://localhost:5000~w',
+           [URL, URL]).
 
 :- http_handler(login(advisor), advisor, [id(advisor)]).
 
@@ -44,14 +46,14 @@ advisor(Request) :-
     adviser_running,
     http_parameters(Request,
                     [
-                        page(Page, [integer, default(0)])
+                        page(Page, [default(0)])
                     ]),
     all_decisions(Decisions),
     all_tasks(Tasks),
     all_security(Security),
     reply_html_page(
         \advisor_head,
-        \advisor_page(_{
+        \advisor_page(args{
                       page: Page,
                       decisions: Decisions,
                       tasks: Tasks,
@@ -75,16 +77,16 @@ advisor_head -->
          ]).
 
 advisor_page(Args) -->
-    { nth0(Args.page(), Args.decisions(), CurDecision) },
+    { nth0(Args.page, Args.decisions, CurDecision) },
     html([
         \advisor_style,
         h1('pack(identity) Setup Advisor'),
           div(class(container), [
-                  \decision_list(Args.decisions(), Args.page),
+                  \decision_list(Args.decisions, Args.page),
                   \decision_area(CurDecision),
                   div(class('right-sidebar'), [
-                        \task_list(Args.tasks()),
-                        \security_list(Args.security())
+                        \task_list(Args.tasks),
+                        \security_list(Args.security)
                       ])
               ])
     ]).
@@ -112,8 +114,8 @@ decision_list_contents([H|T], N) -->
 decision_item(Selected, Decision) -->
     html([div(class(['decision-item', Selected]),
               [
-              \decision_sigil(Decision.status()),
-              span(title(Decision.rollover()), Decision.title())
+              \decision_sigil(Decision.status),
+              span(title(Decision.rollover), Decision.title)
               ]
           )]).
 
@@ -121,7 +123,6 @@ decision_sigil(decided) -->
     html(span(&#(0x1f601))). % beaming face emoji
 decision_sigil(undecided) -->
     html(span(&#(0x1f914))). % thinking face emoji
-
 % &#(0xFE0F)  is green check
 %
 
@@ -140,9 +141,65 @@ html {
 
 
 
+decision_area(CurDecision) -->
+    html(div([id('-container'), 'data-curpage'(CurDecision.title)],
+             [
+             div(id('decision-area'), 'Decision area for decision ~w'-[CurDecision.status]),
+             button(class([prev, 'decision-change-btn']), 'Previous'),
+             button(class([next, 'decision-change-btn']), 'Next')
+             ])).
+
+task_list(Tasks, Page) -->
+    html(div(class(tasks),
+             [
+                h2(
+title('Tasks you need to do - &#xFE0F items are completed'),
+                    'Tasks'),
+                div(\task_list_contents(Tasks, Page))
+             ])).
+
+task_list_contents([], _) --> [].
+task_list_contents([H|T], 0) -->
+    html(\task_item(selected, H)),
+    task_list_contents(T, -1).
+task_list_contents([H|T], N) -->
+    { N \= 0,
+      NN is N - 1
+    },
+    html(\task_item(unselected, H)),
+    task_list_contents(T, NN).
+
+task_item(Selected, Task) -->
+    html([div(class(['task-item', Selected]),
+              [
+              \task_sigil(Task.status),
+              span(title(Task.rollover), Task.title)
+              ]
+          )]).
+
+task_sigil(decided) -->
+    html(span(&#(0x1f601))). % beaming face emoji
+task_sigil(undecided) -->
+    html(span(&#(0x1f914))). % thinking face emoji
+% &#(0xFE0F)  is green check
+%
+
+
+% TODO stubbed in
+all_decisions([_{status:undecided,
+                 title: 'Advisor Help',
+                 rollover: 'Help with the advisor',
+                 name: help
+                },
+               _{status:undecided,
+                 title: 'Login Methods',
+                 rollover: 'Select your Login Methods',
+                 name: methods
+                }]).
+all_tasks([hook_up_db]).
+all_security([fix_gaping_hole]).
 
 
 
-
-
-
+security_list(_, _, _).
+task_list(_, _, _).
