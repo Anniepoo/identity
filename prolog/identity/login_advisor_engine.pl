@@ -20,9 +20,12 @@
     completed/1,
     reset/0.
 
-reset, decision(_) <=> true.
-reset, task(_) <=> true.
-reset, security(_) <=> true.
+reset \ decision(_) <=> true.
+reset \  task(_) <=> true.
+reset \ security(_) <=> true.
+reset \ completed(_) <=> true.
+reset <=> true.
+
 
 activity(decision(X)) :- find_chr_constraint(decision(X)).
 activity(task(X)) :- find_chr_constraint(task(X)).
@@ -40,30 +43,34 @@ ss :- set_prolog_flag(chr_toplevel_show_store, true).
 
 noss :- set_prolog_flag(chr_toplevel_show_store, false).
 
-:- chr_constraint init/0, completed/2, mumble/0.
+:- chr_constraint completed/2, mumble/0.
 
-% better this way
-init ==> task(customize).
-init ==> task(help).
-init ==> security(csrf_in_forms).
-init ==> security(remove_test_reset).
-init ==> task(implement_localization_hook).  % customize
-init ==> task(set_setting(identity:style)).  % customize
-init ==> task(attach_database).
-init ==> decision(methods).
-init ==> decision(forgot_pw_link).
+init :-
+        task(customize),
+        task(help),
+        security(csrf_in_forms),
+        security(remove_test_reset),
+        task(implement_localization_hook),  % customize
+        task(set_setting(identity:style)),  % customize
+        task(attach_database),
+        decision(methods),
+        decision(forgot_pw_link).
 
 :- chr_constraint all_email_tasks/0,
     all_remember_me_tasks/0,
     all_public_url_tasks/0.
 
 
-completed(decision(forgot_pw_link), true) ==> task(customize_forgot_pw_page), all_email_tasks.
+completed(decision(forgot_pw_link), true) ==>
+      task(customize_forgot_pw_page),
+      all_email_tasks.
 
 % won't work, will simplify away and only do first
-all_email_tasks <=> task(attach_email).
-all_email_tasks <=> task(set_setting(identity:require_activation_email)).
-all_email_tasks <=> all_public_url_tasks.
+all_email_tasks <=>
+    task(attach_email),
+    task(set_setting(identity:require_activation_email)),
+    all_public_url_tasks.
+
 % keep all_email_tasks, and only add once using
 all_email_tasks \ all_email_tasks <=> true.
 
@@ -109,8 +116,7 @@ subsumer(A, B) :-
     , =@=(B, BCopy)
     .
 
-
-/*
+    /*
 ?- fc(my_con(A, 3, B)),
 fc(my_con(B, 3, C)).
 
@@ -215,6 +221,15 @@ user(X, UserData)
 
  % avoid the constraint store evaporating at top level.
  ?- run_my_program, break.
+
+
+%
+% toy project - recipe reasoner
+%  (use drinks)
+
+% toy project - radioactive decay
+% given half lives, put in atoms and watch'em decay
+% keeping track of time
 
 
  */
