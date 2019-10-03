@@ -3,35 +3,37 @@
           ss/0,
           noss/0,
           init/0,
-          decision/1,
-              mumble/0,
-          activity/1]).
+          reset_the_advisor/0,
+          num_security/1,
+          num_tasks/1,
+          num_decisions/1,
+          order_remaining_todos/1,
+          details/2
+          ]).
 /** <module> Engine code for the login advisor
  *
+ %
+% name @ retained \ discarded <=> guard | head,body.    Simpagation
+% discarded <=> guard | head, body.              Simplification
+% retained ==> guard | head, body                Propagation
+
  */
 
 :- use_module(library(chr)).
 
-
 :- chr_constraint
-    decision/1,
-    task/1,
-    security/1,
-    completed/1,
-    reset/0.
+    do/1,
+    completed/2,
+    reset_advisor/0.
 
-reset \ decision(_) <=> true.
-reset \  task(_) <=> true.
-reset \ security(_) <=> true.
-reset \ completed(_) <=> true.
-reset <=> true.
+reset_the_advisor :- reset_advisor.
 
+% remove all constraints
+reset_advisor \   do(_) <=> true.
+reset_advisor \   completed(_, _) <=> true.
+reset_advisor <=> true.
 
-activity(decision(X)) :- find_chr_constraint(decision(X)).
-activity(task(X)) :- find_chr_constraint(task(X)).
-activity(security(X)) :- find_chr_constraint(security(X)).
-
-completed(X), decision(X) <=> true.
+completed(X, _) \ do(X) <=> true.
 
 ps :-
     find_chr_constraint(Y),
@@ -43,194 +45,149 @@ ss :- set_prolog_flag(chr_toplevel_show_store, true).
 
 noss :- set_prolog_flag(chr_toplevel_show_store, false).
 
-:- chr_constraint completed/2, mumble/0.
-
 init :-
-        task(customize),
-        task(help),
-        security(csrf_in_forms),
-        security(remove_test_reset),
-        task(implement_localization_hook),  % customize
-        task(set_setting(identity:style)),  % customize
-        task(attach_database),
-        decision(methods),
-        decision(forgot_pw_link).
+        do(customize),
+        do(csrf_in_forms),
+        do(remove_test_reset),
+        do(implement_localization_hook),  % customize
+        do(set_setting(identity:style)),  % customize
+        do(attach_database),
+        do(methods),
+        do(forgot_pw_link).
 
 :- chr_constraint all_email_tasks/0,
     all_remember_me_tasks/0,
     all_public_url_tasks/0.
 
 
-completed(decision(forgot_pw_link), true) ==>
-      task(customize_forgot_pw_page),
+completed(forgot_pw_link, true) ==>
+      do(customize_forgot_pw_page),
       all_email_tasks.
 
-% won't work, will simplify away and only do first
 all_email_tasks <=>
-    task(attach_email),
-    task(set_setting(identity:require_activation_email)),
+    do(attach_email),
+    do(set_setting(identity:require_activation_email)),
     all_public_url_tasks.
 
-% keep all_email_tasks, and only add once using
-all_email_tasks \ all_email_tasks <=> true.
+completed(remember_me, X) ==> X \= none | all_remember_me_tasks.
 
-completed(decision(remember_me), X) ==> X \= none | all_remember_me_tasks.
+all_remember_me_tasks <=> do(set_setting(identity:remember_me_duration)).       % customize
+all_remember_me_tasks <=> do(set_setting(identity:remember_me_secure)).         % customize
 
-all_remember_me_tasks <=> task(set_setting(identity:remember_me_duration)).       % customize
-all_remember_me_tasks <=> task(set_setting(identity:remember_me_secure)).         % customize
+all_public_url_tasks <=> do(set_setting(http:public_host)).
+all_public_url_tasks <=> do(set_setting(http:public_port)).
+all_public_url_tasks <=> do(set_setting(http:public_scheme)).
 
+		 /*******************************
+		 * activity details
+		 *******************************/
+details(attach_database, _{
+                             title: 'Attach Data Store',
+                             type: task,
+                             order: 0
+                         }).
+details(customize, _{
+                       title: 'Customize Behavior',
+                       type: task,
+                       order: 10
+                   }).
+details(csrf_in_forms, _{
+                           title: 'Cross Site Resource Forms',
+                           type: security,
+                           order: 20
+                       }).
+details(remove_test_reset, _{
+                           title: 'Remove test reset',
+                           type: security,
+                           order: 30
+                       }).
+details(implement_localization_hook, _{
+                                         title: 'Customize/localize Strings',
+                                         type: task,
+                                         order: 40
+                                     }).
+details(set_setting(identity:style), _{
+                                         title: 'Name of the style to apply to identity pages',
+                                         type: task,
+                                         order: 50
+                                     }).
+details(methods, _{
+                             title: 'Choose Login Methods',
+                             type: decision,
+                             order: 70
+                         }).
+details(forgot_pw_link, _{
+                             title: 'Decide about forgot password link',
+                             type: decision,
+                             order: 80
+                         }).
+details(attach_email, _{
+                           title: 'Attach Email Delivery Service',
+                           type: task,
+                           order: 90
+                       }).
+details(set_setting(identity:require_activation_email), _{
+                           title: 'Activation Email',
+                           type: task,
+                           order: 100
+                       }).
+details(set_setting(identity:remember_me_duration), _{
+                           title: 'Set remember me duration',
+                           type: task,
+                           order: 110
+                       }).
+details(set_setting(identity:remember_me_secure), _{
+                           title: 'Set remember me security',
+                           type: task,
+                           order: 112
+                       }).
+details(set_setting(http:public_host), _{
+                           title: 'Set the public host name',
+                           type: task,
+                           order: 120
+                       }).
+details(set_setting(http:public_port), _{
+                           title: 'Set the public host port',
+                           type: task,
+                           order: 120
+                       }).
+details(set_setting(http:public_scheme), _{
+                           title: 'Set  the public host scheme',
+                           type: task,
+                           order: 120
+                       }).
 
-all_public_url_tasks <=> task(set_setting(http:public_host)).
-all_public_url_tasks <=> task(set_setting(http:public_port)).
-all_public_url_tasks <=> task(set_setting(http:public_scheme)).
+		 /*******************************
+		 * UI support                   *
+		 *******************************/
 
-%
-% when an activity is completed, we remove it
+num_security(Sec) :-
+    num_of_type(Sec, security).
+num_tasks(Tasks) :-
+    num_of_type(Tasks, task).
+num_decisions(Dec) :-
+    num_of_type(Dec, decision).
 
-completed(decision(X), _) \ decision(X) <=> true.
-completed(task(X), _) \ task(X) <=> true.
-completed(security(X), _) \ security(X) <=> true.
+num_of_type(N, Type) :-
+    findall(X, (find_chr_constraint(do(X)),
+               details(X, D),
+               D.type = Type), List),
+    length(List, N).
 
-%
-% name @ retained \ discarded <=> guard | head,body.    Simpagation
-% discarded <=> guard | head, body.              Simplification
-% retained ==> guard | head, body                Propagation
+order_remaining_todos(Tasks) :-
+    findall(X, find_chr_constraint(do(X)), List),
+    predsort(todo_order, List, Tasks).
 
-mumble, mumble, mumble <=> writeln('3 mumbles') | true.
-mumble ==> mumble.
-
-doorbell :-
-    mumble.
-
-
-
-fc(X) :-
-    functor(X, XF, N),
-    functor(Y, XF, N),
-    find_chr_constraint(Y),
-    subsumer(X, Y).
-
-subsumer(A, B) :-
-    copy_term(B, BCopy)
-    , catch(A = B, _, fail)
-    , =@=(B, BCopy)
-    .
-
-    /*
-?- fc(my_con(A, 3, B)),
-fc(my_con(B, 3, C)).
-
-% above is O(n^2)
-:- chr_constraint my_con/3.
-
-% above is linear
-:- chr_constraint my_con(+dense_int, +dense_int, +dense_int).
-
-% my_con(A,3,B), my_con(B, 3, C) ==> something.
-
-*/
-
-/*
- *
- *
-
-fc(X) :-
-    functor(X, XF, N),
-    functor(Y, XF, N),
-    find_chr_constraint(Y),
-    subsumer(X, Y).
-
-subsumer(A, B) :-
-    copy_term(B, BCopy)
-    , catch(A = B, _, fail)
-    , =@=(B, BCopy)
-    .
-
-
-?- fc(my_con(A, 3, B)),
-fc(my_con(B, 3, C)).
-
-
-:- chr_constraint my_con(+dense_int, +dense_int, +dense_int).
-
-my_con(A,3,B), my_con(B, 3, C) ==> something.
-
-% make all connected edges
-a-b b-c c-d
-a-d
-:- chr_constraint node/2.
-node(A,B) \ node(A,B) <=> true.     % anti-cycle
-
-node(A,B), node(B,C) ==> node(A,C).
-
-?- node(1,2), node(2,3), node(3,1).
-
-query(5, 2, X).
-:- chr_constraint query(+, +, -).
-node(A,D), node(B,E)
-\ query(A,B,C)
-<=> C is E + D.
-
-% print out execution without pausing
-?- chr_leash(-all).  chr_trace.  query(2,3,N).
-
-% better to have init ==> task(customize),task(help),security(csrf_in_forms)...
-% even better , since we don't want init
-init <=> task(customize),task(help),security(csrf_in_forms)...
-% but even better, just do it in prolog
-init :- task(customize),task(help),security(csrf_in_forms).
-% instead of
-init ==> security(remove_test_reset).
-init ==> task(implement_localization_hook).  % customize
-init ==> task(set_setting(identity:style)).  % customize
-init ==> task(attach_database).
-
-?- listing(init).
-
-a \ a <=> true.
-
-% keep all_email_tasks, and only add once using
-all_email_tasks \ all_email_tasks <=>
-
-:-chr_constraint  all_email_tasks(+dense_int, +dense_int, +dense_int).
-
-% only do it once pattern
-all_email_tasks(    RI,  A,  B)
-\ create_all_email(RI ,B)
-<=>  true.
-
-create_all_email(RI ,B)
-<=>  gen_sym(A), all_email_tasks(    RI,  A,  B).
-
-?- create_all_email(RI ,B), create_all_email(RI ,B).
-
-% this is Ok
-completed(decision(remember_me), X) ==> X \= none | all_remember_me_tasks(X).
-
-user(X, UserData)
-, completed(decision(remember_me), X) ==> X \= none | all_remember_me_tasks(X).
-
-% put this right at beginning for production
-% disable tracing (makes it run faster by  removing debug )
-:- chr_option(debug, off).
-% let it optimize
-:- chr_option(optimize, experimental).
-
-%slow, easy
- :- chr_option(debug, on).  :- chr_option(optimize, off).
-
- % avoid the constraint store evaporating at top level.
- ?- run_my_program, break.
+todo_order(<, A, B) :-
+    details(A, AD),
+    details(B, BD),
+    AD.order < BD.order.
+todo_order(>, A, B) :-
+    details(A, AD),
+    details(B, BD),
+    AD.order > BD.order.
+todo_order(=, _, _).
+% I know, there's a compare/3 but I'll extend this
 
 
-%
-% toy project - recipe reasoner
-%  (use drinks)
-
-% toy project - radioactive decay
-% given half lives, put in atoms and watch'em decay
-% keeping track of time
-
-
- */
 
