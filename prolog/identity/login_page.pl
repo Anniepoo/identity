@@ -223,3 +223,4 @@ improper_login -->
                   h1(\local('Sorry, login request ill formed')),
                   a(href(location_by_id(home), \local('Return to home')))
               ])).
+

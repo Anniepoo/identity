@@ -3,6 +3,9 @@
 
 This is a cookbook guide to getting identity services running.
 
+Our philosophy is that it's your project, we try to be as
+minimally intrusive as possible. 
+
 ### General Setup
 
 You will need to ensure the identity library is loaded.
@@ -28,7 +31,7 @@ You might also want to increase the session time.
 		use_default_db,
 		http_set_session_options(
 		    [ create(noauto),
-		      timeout(1800)  % half hour sessions
+		      timeout(1800)  % session timeout as appropriate
 		    ]),
 		http_server(http_dispatch, [port(5000)]).
 ---
@@ -41,6 +44,11 @@ set them up yourself.
 
 As long as the abstract paths `js(.)`, `css(.)`, and `img(.)` point
 at the appropriate directories you'll be fine.
+
+### Remove ResetDB
+
+If you started by using the test code, remove the resetdb handler
+or anyone on the web can truncate your database!
 
 ### Attach Database
 
@@ -93,7 +101,18 @@ Non logged in users can access only pages without a role.
 
 ### Sessions
 
-Default behavior is to only make a session when a user logs in. If you need
+Default behavior is to only make a session when a user logs in.
+
+When you start the http server do this before starting the server.
+
+----
+ http_set_session_options(
+        [ create(noauto),
+          timeout(1800)  % session length
+        ]),
+----
+
+If you need
 sessions for guests I suggest you figure out what that should look like and
 send us a PR.
 
@@ -160,15 +179,16 @@ Currently not done, but working on password reset email. A similar hook will be 
 
 ## Registration Validation
 
+When registering, the user enters a username, email, and password. 
+
+You need to set up validation (eg your site may not allow spaces in usernames, or may demand passwords be at least 8 characters long).
+
 validation is controlled by a nested dict. This dict is a setting, `identity:constraints`.
 See `login_validate.pl` for the default. Other than using messy regexes, it's fairly obvious.
-
-I intend to add ajax form verification at some point.
 
 ## REST endpoints
 
 REST endpoints only need the appropriate role in the http_handler options.
 
 Pengines haven't been addressed yet.
-
 

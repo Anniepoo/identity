@@ -97,3 +97,15 @@ reset_db(Request) :-
         p('You have truncated the user database')
     ).
 
+
+
+
+
+
+
+
+
+
+
+
+

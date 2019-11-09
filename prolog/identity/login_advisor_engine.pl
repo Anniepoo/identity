@@ -71,12 +71,14 @@ all_email_tasks <=>
 
 completed(remember_me, X) ==> X \= none | all_remember_me_tasks.
 
-all_remember_me_tasks <=> do(set_setting(identity:remember_me_duration)).       % customize
-all_remember_me_tasks <=> do(set_setting(identity:remember_me_secure)).         % customize
+all_remember_me_tasks <=>
+        do(set_setting(identity:remember_me_duration)), % customize
+        do(set_setting(identity:remember_me_secure)).  % customize
 
-all_public_url_tasks <=> do(set_setting(http:public_host)).
-all_public_url_tasks <=> do(set_setting(http:public_port)).
-all_public_url_tasks <=> do(set_setting(http:public_scheme)).
+all_public_url_tasks <=>
+    do(set_setting(http:public_host)),
+    do(set_setting(http:public_port)),
+    do(set_setting(http:public_scheme)).
 
 		 /*******************************
 		 * activity details

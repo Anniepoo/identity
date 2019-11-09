@@ -26,6 +26,10 @@ mep(L) ==> foreach(member(X, L), zap(X)).
 
 nord ==> \+ find_chr_constraint(noodge) | dingle.
 
+better
+nord, noodge  ==> true.
+nort ==> dingle.
+
 % Examples to write
 %
 % cellular automaton from schrijvers slides  slide 82
@@ -42,6 +46,7 @@ nord ==> \+ find_chr_constraint(noodge) | dingle.
 
 % adventure game.
 
+% 'properly dressed' puzzle
 
 %patterns
 % domain constraint from slides 96 - pattern, guard for instantiation
@@ -57,6 +62,7 @@ nord ==> \+ find_chr_constraint(noodge) | dingle.
 % pattern - get_gcd is a chr_constraint used only
 % to get the value of another constraint.
 % Not sure if this backtracks
+% it does NOT, apparently
 %
 % Note that the binding happens in the BODY, cause binding in the
 % head is a nono
@@ -64,7 +70,92 @@ nord ==> \+ find_chr_constraint(noodge) | dingle.
 % constraint to get the current gcd/1 value
 % gcd(N) \ get_gcd(M) <=> M = N.
 %
+% that won't backtrack, this will
+% gcd(N), get_gcd(M) ==> M = N.
+% get_gcd(_) <=> true.
+%
+% that doesn't backtrack either
 
+% This is the canonical get_ pattern per Thom Fruewirth
+
+% no backtrack get
+foo(X) \ get_foo(Y) <=>
+         X = Y.
+get_foo(_) <=> fail.
+
+% Yay, backtracking get that ACTUALLY WORKS
+
+========== entire file =========
+:- use_module(library(chr)).
+
+:- chr_constraint foo/1,one_foo/1, collect_foo/1, get_foo/1.
+
+load_it :-
+    foo(1),
+    foo(3),
+    foo(7).
+
+% copy constraints to be collected
+foo(X), get_foo(_) ==> one_foo(X).
+get_foo(L) <=> collect_foo(L).
+
+% collect and remove copied constraints
+one_foo(X), collect_foo(L) <=>
+          L=[X|L1], collect_foo(L1).
+collect_foo(L) <=> L=[].
+
+go(X) :- load_it, get_foo(X).
+
+=================
+
+
+/*
+:- use_module(library(chr)).
+
+:- chr_constraint foo/1, get_foo/1.
+
+load_it :-
+    foo(1),
+    foo(3),
+    foo(7).
+
+foo(X), get_foo(Y) ==>
+         X = Y.
+get_foo(_) <=> true.
+
+%  library(chr) compiled into chr 0.52 sec, 133 clauses
+% /home/anniepoo/prologhelp/chrtest compiled 0.53 sec, 57 clauses
+?- load_it, find_all(X, get_foo(X), L).
+Correct to: "findall(X,get_foo(X),L)"? yes
+L = [],
+foo(7),
+foo(3),
+foo(1).
+
+?- 
+
+So, this is ugly as hell, but works
+
+all_foos(L) :-
+    nb_setval(all_foos_val, []),
+    af(L).
+
+af(_) :-
+    find_chr_constraint(foo(X)),
+    nb_getval(all_foos_val, OldL),
+    nb_setval(all_foos_val, [X | OldL]),
+    fail.
+af(L) :-
+    nb_getval(all_foos_val, L).
+
+doesnt work
+
+foo(X) \ gather_foos_together(Old) <=> gather_foos_together([X | Old]).
+
+gather_foos_together(Foos), get_thy_foos(Y) ==> Foos = Y.
+% get_thy_foos(_) <=> true.   don't do this
+
+*/
 
 
 		 /*******************************
@@ -220,5 +311,26 @@ user(X, UserData)
 % saner way to do same
 ?- set_prolog_flag(toplevel_mode, recursive).
 
+
+ttmrichter
+
+[21:35] <ttmrichter> I'm simulating a CPU core.
+[21:35] <ttmrichter> It has an 8-bit register, a couple of 16-bit registers, and a 24-bit register.
+[21:35] <ttmrichter> A simplistic "just store this value" is not a good thing.
+[21:35] <ttmrichter> accumulator     @ a(A),   ra(_)  <=>   u8(A)   | ra(A).
+[21:35] <ttmrichter>                   a(A),   ra(_)  <=> \+u8(A)   | fail.
+[21:35] <ttmrichter> So I do that.
+[21:36] <ttmrichter> a(+A) sets the accumulator value of register A iff the provided value fits in an unsigned integer width.
+[21:37] <ttmrichter> The whole .... guard | action.  ... \+guard | fail. pattern is everywhere in my code.
+
+
+useful cheatsheet
+
+https://dtai.cs.kuleuven.be/CHR/files/CHR_cheatsheet.pdf
+
+Falco Nogatz worked on this
+http://www1.informatik.uni-wuerzburg.de/en/news/single/news/improving-deutsche-bahn-with-prolog/
+
+https://github.com/fnogatz/CHR.js-website
  */
 
