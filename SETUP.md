@@ -36,6 +36,10 @@ You might also want to increase the session time.
 		http_server(http_dispatch, [port(5000)]).
 ---
 
+### Serve via TLS
+
+This library is NOT secure when served via http! Set up https at least for all pages under /login
+
 ###  Setup static file handlers
 
 You will need the normal js, css, and img handlers. You can either just
@@ -175,7 +179,31 @@ Implement `login_email:activation_email_hook(UName, Email, Link)`, sending the e
 
 If not implemented the default sends the link to `debug/3`. This can be useful for debugging.
 
-Currently not done, but working on password reset email. A similar hook will be provided.
+### Password Reset Email
+
+You need to set some settings to set up 
+:- setting(identity:reset_email_life, integer, 86400,
+           "Time a password reset email is valid").
+
+You may want to override any of these handlers with a higher priority handler.
+
+% where the 'forgot my pw' link goes
+:- http_handler(login(forgot), forgot_form_handler, [priority(-100), id(forgot)]).
+% where user goes after entering email at form on above page
+:- http_handler(login(doforgot), doforgot_form_handler, [priority(-100), id(doforgot)]).
+% Where the emailed link takes the user
+:- http_handler(login(resetpw), resetpw_form_handler, [prefix, priority(-100), id(resetpw)]).
+% Where the form presented in resetpw takes the user
+:- http_handler(login(doactualpwreset), do_actual_reset_handler, [priority(-100),
+                                                               id(doactualpwreset)]).
+
+You also need to install a hook to send the actual email.
+
+:- multifile login_email:forgot_email_hook/3.
+
+ login_email:forgot_email_hook(UName, Email, Link)
+
+The default behavior only writes the information to `debug/3`
 
 ## Registration Validation
 

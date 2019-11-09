@@ -13,18 +13,17 @@ An identity management system for SWI-Prolog.
 
 This release has all basic functionality working.
 
-Testing has been minimal, but if you're adventurous, this is now the reasonable way to make a login and registration system in SWI-Prolog.
+Testing has been minimal, but this is now the reasonable way to make a login and registration system in SWI-Prolog.
 
 # What it is
 
 Almost every web application has the notion of a user, with an account,
 a profile, and some privileges.
-
 And signing up for and maintaining this is pretty much done the same
-way, with slight variations, everywhere.
-
-And it can get messy and complex to do. There's no reason for everybody
+way, with slight variations, everywhere. And it can get messy and complex to do. There's no reason for everybody
 to do it over and over.
+
+Further, most security errors happen during this process. It's not a good thing to **roll your own**.
 
 I needed a library like this, so I wrote one.
 
@@ -33,7 +32,7 @@ good about promptly accepting PRs for needed hooks. Please contact the lead
 maintainer (Anniepoo on github, anne@swi-prolog.org by email) before implementing
 such so we can maintain some uniformity.
 
-And forking and hacking on this or just stealing parts are valid.
+And never-to-return forking and hacking on this or just stealing parts are valid.
 
 ## Version
 
