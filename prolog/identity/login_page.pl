@@ -174,7 +174,8 @@ do_login_handler(Request) :-
                                   RememberMe,
                                   RememberLogin,
                                   NewStatus),
-        do_actual_login(NewStatus, SuccessURL, UserName, Request).
+        do_actual_login(NewStatus, SuccessURL, UserName, Request),
+        !.
 do_login_handler(_Request) :-
       setting(identity:style, Style),
       reply_html_page(
@@ -199,9 +200,7 @@ do_actual_login(ok_remember, SuccessURL, UserName, _Request) :-
       format('Content-type: text/plain\r\n'),
       format('Set-Cookie: ~w\r\n', [Contents]),
       format('Location: ~w\r\n\r\n', [SuccessURL]).
-do_actual_login(Status, SuccessURL, _UserName, Request) :-
-      Status \= ok,
-      Status \= ok_remember,
+do_actual_login(other(Status), SuccessURL, _UserName, Request) :-
       http_link_to_id(login_form,
                       [
                           warn(Status),
@@ -213,7 +212,8 @@ do_actual_login(Status, SuccessURL, _UserName, Request) :-
 new_status_if_remembering(ok, yes, _, ok_remember).
 new_status_if_remembering(ok, _, Button, ok_remember) :-
       Button \= notthatbutton.
-new_status_if_remembering(Status, _, _, Status).
+new_status_if_remembering(ok_remember, _, _, ok_remember).
+new_status_if_remembering(Status, _, _, other(Status)).
 
 % TODO make it possible to override this
 improper_login -->
