@@ -97,10 +97,8 @@ set_user_property(UName, Property) :-
     set_user_property_expansion(UName, Property).
 set_user_property(UName, Property) :-
     using_default_db,
-    Property =.. [PFunctor | Args],
-    length(Args, Arity),
-    length(Blanks, Arity),
-    RetractProperty =.. [PFunctor | Blanks],
+    functor(Property, Functor, Arity),
+    functor(RetractProperty, Functor, Arity),
     with_mutex(login_database,
                (   retractall_u_prop(UName, RetractProperty),
                    assert_u_prop(UName, Property))).
