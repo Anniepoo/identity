@@ -29,11 +29,10 @@
  *
  * Of course the third party could be Bob's own user login system.
  *
-The
+* The
  and carl hands
  * her a token. Alice gives the token to Bob. Bob gives the token to
-
-[Handy OAuth2
+*  [Handy OAuth2
  * explainer](https://aaronparecki.com/oauth-2-simplified/#roles)
  *
  * Your client ID is 42 for sketchyapp
@@ -73,7 +72,7 @@ login_form_handler(_Request) :-
       reply_html_page(
           title('Login with DodgyAuth!'),
           [h1('Login with DodgyAuth'),
-           a(href('http://localhost:5000), 'Login as Alice'),
+           a(href('http://localhost:5000'), 'Login as Alice'),
            a(href(location_by_id(logout)), 'Log Out'),
            div(id(loadbyajax), 'not yet loaded by ajax'),
            p(\current_user),

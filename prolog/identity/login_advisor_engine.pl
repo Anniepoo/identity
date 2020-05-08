@@ -66,7 +66,7 @@ completed(forgot_pw_link, true) ==>
 
 all_email_tasks <=>
     do(attach_email),
-    do(set_setting(identity:require_activation_email)),
+    do(set_setting(identity:require_activation_email)), % TODO RETHINK THIS
     all_public_url_tasks.
 
 completed(remember_me, X) ==> X \= none | all_remember_me_tasks.

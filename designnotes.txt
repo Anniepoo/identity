@@ -41,7 +41,7 @@ d) have a directive that sets a path or a prefix as requiring role such and such
 and 503 if can't determine role needed
 or have a default lo priority prefix / id of nobody
 
-# Sesssions
+# Sessions
 
 There should be some way to get the current user name.
 

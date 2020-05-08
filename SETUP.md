@@ -53,7 +53,7 @@ at the appropriate directories you'll be fine.
 
 If you started by using the test code, remove the resetdb handler
 or anyone on the web can truncate your database!
-
+native
 ### Attach Database
 
 Identity is agnostic about how you store your user data.
@@ -160,7 +160,7 @@ the registration form are persisted into the user info database
 
 ### Log Out
 
-You can make logout links by simply visiting `/login/logout` while logged in.
+You can make logout links by simply vemail not refilled when passwords don't match during regisisiting `/login/logout` while logged in.
 
 By default this returns to the id `home`. If you want to go elsewhere, add a parameter `referer`.
 
