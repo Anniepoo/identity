@@ -56,6 +56,10 @@ distributed with `package-http`, part of **SWI-Prolog**.
 The directory containing this file should also contain a SETUP.md file. This contains
 a walk through of how to set the system up.
 
+## Setup for the Postgres Adapter
+
+the directory prolog/identity/store/postgresql has a README.md
+
 ## Development
 
 To do meaningful development you need to be running https and be visible to the outside world.
