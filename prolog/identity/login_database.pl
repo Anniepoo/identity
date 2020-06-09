@@ -8,11 +8,10 @@
           set_user_property/2,
           assert_user_property/2,
           retract_user_property/2,
-          retractall_user_property/2
+          retractall_user_property/2,
+          current_user_property/1
           ]).
-% TODO document all 'known' properties
-% eg password_hash, role
-%
+
 :- use_module(library(http/http_session)).
 :- use_module(library(http/html_write)).
 :- use_module(library(identity/login_crypto)).
@@ -55,6 +54,29 @@ current_user(guest).
 current_user -->
     { current_user(UName) },
     html(UName).
+
+current_user_property(Prop) :-
+     current_module(M),
+     module_property(M, class(user)),
+     \+ memberchk(M, [testcondition,
+                      socket,
+                      aggregate,
+                      prolog_predicate,
+                      link_xpce,
+                      prolog_colour]),
+     current_predicate(M:F/A),
+     \+ member(F, [setting]),
+     functor(H, F, A),
+     catch(clause(H, B), _, fail),
+     member(UsesProp, [
+                set_user_property(_, Prop),
+                assert_user_property(_, Prop),
+                retractall_user_property(_, Prop)
+            ]),
+     sub_term(UsesProp, B),
+     \+ var(Prop).
+
+
 
 
 		 /*******************************
