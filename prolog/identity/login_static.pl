@@ -17,6 +17,6 @@ user:file_search_path(js, '../prolog/web/js').
 user:file_search_path(css, '../prolog/web/css').
 user:file_search_path(img, '../prolog/web/icons').
 
-:- http_handler(js(.), http_reply_from_files(js(.), []), [prefix]).
-:- http_handler(css(.), http_reply_from_files(css(.), []), [prefix]).
-:- http_handler(img(.), http_reply_from_files(img(.), []), [prefix]).
+:- http_handler(js(.), http_reply_from_files(js(.), []), [prefix, id(js)]).
+:- http_handler(css(.), http_reply_from_files(css(.), []), [prefix, id(css)]).
+:- http_handler(img(.), http_reply_from_files(img(.), []), [prefix, id(img)]).
