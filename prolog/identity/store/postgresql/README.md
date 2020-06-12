@@ -1,11 +1,16 @@
 # PostgreSQL  adapter for pack(identity)
 
+# Install
+
+Unfortunately setting up connection via ODBC is not fun.
+
+You will need to set up PostgreSQL itself, and then set up the ODBC connector.
 
 ## Set up Postgres
 
 Since setting up Postgres can be not nice I am providing detailed instructions.
 
-These taken from a combination of [DigitalOcean instructions](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04) , [this discussion on the swi-prolog Discourse](https://swi-prolog.discourse.group/t/wiki-discussion-swi-prolog-connecting-to-postgresql-via-odbc/2405/4) , [this repo](https://github.com/roblaing/swipl-webapp-howto/tree/master/unit3) and  [this wiki page on the SWI-Prolog Discourse](https://swi-prolog.discourse.group/t/swi-prolog-connecting-to-postgresql-via-odbc/2404).
+These taken from a combination of [DigitalOcean instructions](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04) , [this discussion on the swi-prolog Discourse](https://swi-prolog.discourse.group/t/wiki-discussion-swi-prolog-connecting-to-postgresql-via-odbc/2405/4) , [this repo](https://github.com/roblaing/swipl-webapp-howto/tree/master/unit3) and  [this wiki page on the SWI-Prolog Discourse](https://swi-prolog.discourse.group/t/swi-prolog-connecting-to-postgresql-via-odbc/2404)
 
 May God keep your immortal soul.
 
@@ -187,6 +192,11 @@ Brute force fix for encoding name too long, put this in your .bashrc
 	export LC_TELEPHONE="en_US.UTF-8"
 	export LC_MEASUREMENT="en_US.UTF-8"
 	export LC_IDENTIFICATION="en_US.UTF-8"
+
+
+# Usage
+
+Congratulations, you lived through install.
 
 
 
