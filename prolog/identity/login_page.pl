@@ -9,6 +9,7 @@
           login_remember_submit//0,
           login_warning//0,
           login_register_link//0,
+          login_forgot_password//0,
           do_actual_login/4]).
 /** <Module> Login page
 *
