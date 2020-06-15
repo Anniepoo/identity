@@ -68,7 +68,6 @@ login_hidden_referer -->
     },
     html(input([type(hidden), name(referer), value(Referer)], [])).
 
-
 login_warning -->
     {
         (   http_current_request(Request),

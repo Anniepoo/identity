@@ -48,7 +48,9 @@ add_user(UName, Password, Email) :-
     ).
 
 current_user(UName) :-
-    http_session_data(user(UName)).
+    catch(http_session_data(user(UName)),
+          _,
+          fail).
 current_user(guest).
 
 current_user -->
