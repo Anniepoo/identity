@@ -176,7 +176,13 @@ do_login_handler(Request) :-
                                   RememberLogin,
                                   NewStatus),
         do_actual_login(NewStatus, SuccessURL, UserName, Request).
-do_login_handler(_Request) :-
+do_login_handler(Request) :-
+      http_redirect(moved_temporary, location_by_id(login(login_error)), Request).
+
+
+:- http_handler(login(login_error), login_error_landing, [id(login_error), priority(-100)]).
+
+login_error_landing(_Request) :-
       setting(identity:style, Style),
       reply_html_page(
           Style,
