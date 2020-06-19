@@ -160,7 +160,7 @@ the registration form are persisted into the user info database
 
 ### Log Out
 
-You can make logout links by simply vemail not refilled when passwords don't match during regisisiting `/login/logout` while logged in.
+You can make logout links by simply  visiting `/login/logout` while logged in.
 
 By default this returns to the id `home`. If you want to go elsewhere, add a parameter `referer`.
 
@@ -204,6 +204,10 @@ You also need to install a hook to send the actual email.
  login_email:forgot_email_hook(UName, Email, Link)
 
 The default behavior only writes the information to `debug/3`
+
+You will also need to install a hook to send activation emails if you do activation emails.
+
+login_email:activation_email_hook(UName, Email, Link),
 
 ## Registration Validation
 
