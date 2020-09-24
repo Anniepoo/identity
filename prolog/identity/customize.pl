@@ -39,3 +39,5 @@ local(X, X).
            "Duration in seconds rememberme lasts. Default 30 days.").
 :- setting(identity:rememberme_secure, oneof(['', 'Secure; ']), 'Secure; ',
            "Set to '' to be able to run remember me via http (SECURITY - DEV ONLY)").
+:- setting(identity:reset_email_life, integer, 86400,
+           "Time a password reset email is valid").

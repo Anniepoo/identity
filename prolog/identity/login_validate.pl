@@ -1,5 +1,5 @@
 :- module(login_validate, [
-          validate_js//0,
+          login_validate_js//0,
           valid/2
           ]).
 /** <module> Form validation of username, password, and email
@@ -48,7 +48,7 @@ constraints(X) :-
 % valid, and perfect just as you are.
 % I feel your pain.
 %
-validate_js -->
+login_validate_js -->
     { constraints(Constraints) },
     html([\js_script({|javascript(Constraints)||
          const loginConstraints = Constraints;

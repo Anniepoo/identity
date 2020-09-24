@@ -1,4 +1,10 @@
-:- module(login_register, []).
+:- module(login_register, [
+              login_email//0,
+              register_user_name_field//0,
+              register_password_field//0,
+              register_password2_field//0,
+              login_submit_register//0
+                          ]).
 /** <module> Registration module for identity
  *
  */
@@ -47,7 +53,7 @@ register_form -->
                  div([label(for(passwd2), \local('Repeat Password:')),
                       \register_password2_field]),
                  \login_submit_register,
-                 \validate_js
+                 \login_validate_js
              ])).
 
 login_submit_register -->
@@ -94,8 +100,9 @@ register_password2_field -->
 		  *  handle register form data  *
 		 *******************************/
 
-:- http_handler(login(doregister), doregister_handler, [id(doregister), identity(guest), priority(-100)]).
+:- multifile registration_additional_info/2.
 
+:- http_handler(login(doregister), doregister_handler, [id(doregister), identity(guest), priority(-100)]).
 
 doregister_handler(Request) :-
         member(method(post), Request),
@@ -118,6 +125,7 @@ doregister_handler(Request) :-
                  Password,
                  Email
                  ),
+            ignore(registration_additional_info(UserName, Data)),
             do_actual_login(ok, SendUserTo, UserName, Request)
         ;
            www_form_encode(Status, URLStatus),

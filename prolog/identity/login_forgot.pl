@@ -18,8 +18,6 @@
 :- use_module(library(identity/login_database), [user_property/2, set_user_property/2]).
 :- use_module(library(http/http_client)).
 
-:- setting(identity:reset_email_life, integer, 86400,
-           "Time a password reset email is valid").
 
 % where the 'forgot my pw' link goes
 :- http_handler(login(forgot), forgot_form_handler, [priority(-100), id(forgot)]).
