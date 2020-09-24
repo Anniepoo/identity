@@ -37,7 +37,7 @@ Interact with postgres as needed, and then exit.
 
 I made a database named swipl with
 
-    CREATE DATABAE swipl;
+    CREATE DATABASE swipl;
 
 You will need a 'role' to operate with. As the postgres user, do
 
@@ -153,7 +153,7 @@ If you installed from ppa's on Debian you may need
 
    sudo apt-get install swi-prolog-odbc 
 
-	cd identiry/prolog/identity/store/sql/
+	cd identity/prolog/identity/store/sql/
 	swipl odbctest.pl
 	?- example.
 	posts rows: row(0)
