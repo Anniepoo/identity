@@ -217,6 +217,31 @@ user_property_(Connection, UName, Property) :-
 %   sets the singleton property in database by class,
 %   where class is signature
 %
+login_database:set_user_property(UName, Property) :-
+    with_mutex(
+        login_database,
+        setup_call_cleanup(
+            (
+                setting(identity:odbc_name, OdbcName),
+                odbc_connect(OdbcName, Connection, [])
+            ),
+            (
+                set_user_property_(Connection, UName, Property)
+            ),
+            (
+                odbc_disconnect(Connection)
+            )
+        )
+    ).
+
+% TODO complete this
+user_property_(Connection, UName, password_hash(PasswordHash)) :-
+    setting(identity:postgres_user_table, UserTableName),
+    odbc_query(
+        Connection,
+        'SELECT password_hash from ~w WHERE user_name = \'~w\'' -[UserTableName, UName],
+        row(PasswordHash)
+    ).
 
 %!  assert_user_property(+UName:string, +Property:acyclic) is det
 %
