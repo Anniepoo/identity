@@ -29,38 +29,41 @@ database_is_set_up :-
     setting(identity:postgres_user_table, UserTableName),
     setting(identity:postgres_role_table, RoleTableName),
     setting(identity:postgres_activation_key_table, ActivationKeyTableName),
-    setting(identity:postgres_etcetera_table_name, EtceteraTableName),
+    setting(identity:postgres_etcetera_table, EtceteraTableName),
     findall(UserField,
             odbc_query(
                 Connection,
-                'select table_name, column_name, data_type from information_schema.columns where table_name = \'~w\';' -[UserTableName],
+                'select table_name, column_name, data_type from information_schema.columns where table_name = \'~w\';'
+                        -[UserTableName],
                 UserField),
             UserFields),
     permutation(UserFields, [
-                    row(users,id,integer),
-                    row(users,user_name,'character varying'),
-                    row(users,password_hash,'character varying'),
-                    row(users,email,'character varying')]),
+                    row(UserTableName,id,integer),
+                    row(UserTableName,user_name,'character varying'),
+                    row(UserTableName,password_hash,'character varying'),
+                    row(UserTableName,email,'character varying')]),
     findall(RoleField,
             odbc_query(
                 Connection,
-                'select table_name, column_name, data_type from information_schema.columns where table_name = \'~w\';' -[RoleTableName],
+                'select table_name, column_name, data_type from information_schema.columns where table_name = \'~w\';'
+                        -[RoleTableName],
                 RoleField),
             RoleFields),
     permutation(RoleFields, [
-                    row(roles,id,integer),
-                    row(roles,user_id,integer),
-                    row(roles,role,'character varying')]),
+                    row(RoleTableName,id,integer),
+                    row(RoleTableName,user_id,integer),
+                    row(RoleTableName,role,'character varying')]),
     findall(ActivationKeyField,
             odbc_query(
                 Connection,
-                'select table_name, column_name, data_type from information_schema.columns where table_name = \'~w\';' -[ActivationKeyTableName],
+                'select table_name, column_name, data_type from information_schema.columns where table_name = \'~w\';'
+                        -[ActivationKeyTableName],
                 ActivationKeyField),
             ActivationKeyFields),
     permutation(ActivationKeyFields, [
-                    row(activationkeys,id,integer),
-                    row(activationkeys,user_id,integer),
-                    row(activationkeys,activation_key,'character varying')]),
+                    row(ActivationKeyTableName,id,integer),
+                    row(ActivationKeyTableName,user_id,integer),
+                    row(ActivationKeyTableName,activation_key,'character varying')]),
     findall(EtceteraField,
             odbc_query(
                 Connection,
@@ -69,10 +72,10 @@ database_is_set_up :-
                 EtceteraField),
             EtceteraFields),
     permutation(EtceteraFields, [
-                    row(activationkeys,id,integer),
-                    row(activationkeys,user_id,integer),
-                    row(activationkeys,prop,'character varying')]),
-
+                    row(EtceteraTableName,id,integer),
+                    row(EtceteraTableName,user_id,integer),
+                    row(EtceteraTableName,functor,'character varying'),
+                    row(EtceteraTableName,prop,text)]),
     odbc_disconnect(Connection).
 
 %! do_setup_database is det.
@@ -88,6 +91,7 @@ do_setup_database :-
     setting(identity:postgres_user_table, UserTableName),
     setting(identity:postgres_role_table, RoleTableName),
     setting(identity:postgres_activation_key_table, ActivationKeyTableName),
+    setting(identity:postgres_etcetera_table, EtceteraTableName),
     odbc_query(Connection, 'CREATE TABLE ~w (\c
       id SERIAL PRIMARY KEY,\c
       user_name varchar(256),\c
@@ -103,6 +107,12 @@ do_setup_database :-
       user_id int,\c
       activation_key varchar(256),\c
       FOREIGN KEY (user_id) REFERENCES ~w(id))' -[ActivationKeyTableName, UserTableName]),
+    odbc_query(Connection, 'CREATE TABLE ~w (
+      id SERIAL PRIMARY KEY,\c
+      user_id int,\c
+      functor varchar(256),\c
+      prop text,\c
+      FOREIGN KEY (user_id) REFERENCES ~w(id))' -[EtceteraTableName, UserTableName]),
     odbc_disconnect(Connection).
 
 login_database:start_db :-
@@ -164,7 +174,7 @@ user_property_(Connection, UName, role(Role)) :-
                           RoleTableName,
                           UserTableName,
                           UName],
-row(Role)
+    row(Role)
     ).
 user_property_(Connection, UName, activation_key(ActivationKey)) :-
     setting(identity:postgres_user_table, UserTableName),
