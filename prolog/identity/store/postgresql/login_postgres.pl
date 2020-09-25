@@ -14,6 +14,7 @@
 :- setting(identity:postgres_user_table, atom, users, "User table name in the database").
 :- setting(identity:postgres_role_table, atom, roles, "Per-user role table name in the database").
 :- setting(identity:postgres_activation_key_table, atom, activationkeys, "Per-user current activation keys table name in the database").
+:- setting(identity:postgres_etcetera_table, atom, etcetera, "table for denormalized data").
 
 %! database_is_set_up is semidet.
 %
@@ -28,6 +29,7 @@ database_is_set_up :-
     setting(identity:postgres_user_table, UserTableName),
     setting(identity:postgres_role_table, RoleTableName),
     setting(identity:postgres_activation_key_table, ActivationKeyTableName),
+    setting(identity:postgres_etcetera_table_name, EtceteraTableName),
     findall(UserField,
             odbc_query(
                 Connection,
@@ -59,6 +61,18 @@ database_is_set_up :-
                     row(activationkeys,id,integer),
                     row(activationkeys,user_id,integer),
                     row(activationkeys,activation_key,'character varying')]),
+    findall(EtceteraField,
+            odbc_query(
+                Connection,
+                'select table_name, column_name, data_type from information_schema.columns where table_name = \'~w\';'
+                         -[EtceteraTableName],
+                EtceteraField),
+            EtceteraFields),
+    permutation(EtceteraFields, [
+                    row(activationkeys,id,integer),
+                    row(activationkeys,user_id,integer),
+                    row(activationkeys,prop,'character varying')]),
+
     odbc_disconnect(Connection).
 
 %! do_setup_database is det.
@@ -99,11 +113,9 @@ login_database:start_db :-
 %   True when Property is a property of user.
 %
 login_database:user_property(UName, Property) :-
-    with_mutex
-    (
+    with_mutex(
         login_database,
-        setup_call_cleanup
-        (
+        setup_call_cleanup(
             (
                 setting(identity:odbc_name, OdbcName),
                 odbc_connect(OdbcName, Connection, [])
@@ -117,54 +129,78 @@ login_database:user_property(UName, Property) :-
         )
     ).
 
+:- multifile
+    login_use_user_sql/1,  % test property to see if user supplied sql
+    login_user_sql/3.   % user supplied sql getter
+
+
 %!  user_passwordHash(?UName, -PasswordHash) is nondet
 %
 %   True when Property is a property of user.
 %
 user_property_(Connection, UName, password_hash(PasswordHash)) :-
     setting(identity:postgres_user_table, UserTableName),
-    odbc_query
-    (
+    odbc_query(
         Connection,
         'SELECT password_hash from ~w WHERE user_name = \'~w\'' -[UserTableName, UName],
         row(PasswordHash)
     ).
 user_property_(Connection, UName, email(Email)) :-
     setting(identity:postgres_user_table, UserTableName),
-    odbc_query
-    (
+    odbc_query(
         Connection,
         'SELECT email from ~w WHERE user_name = \'~w\'' -[UserTableName, UName],
         row(Email)
     ).
 user_property_(Connection, UName, role(Role)) :-
     setting(identity:postgres_user_table, UserTableName),
-    setting(identity:postgres_user_table, RoleTableName),
-    odbc_query
-    (
+    setting(identity:postgres_role_table, RoleTableName),
+    odbc_query(
         Connection,
-        'SELECT role from ~w JOIN ~w ON ~w.id = ~w.user_id' -[RoleTableName,
-                                                              UserTableName,
-                                                              UserTableName,
-                                                              RoleTableName],
-        row(Role)
+        'SELECT role from ~w JOIN ~w ON ~w.id = ~w.user_id WHERE ~w.name = \'~w\''-[
+                          RoleTableName,
+                          UserTableName,
+                          UserTableName,
+                          RoleTableName,
+                          UserTableName,
+                          UName],
+row(Role)
     ).
 user_property_(Connection, UName, activation_key(ActivationKey)) :-
     setting(identity:postgres_user_table, UserTableName),
-    setting(identity:postgres_user_table, ActivationKeyTableName),
-    odbc_query
-    (
+    setting(identity:postgres_activation_key_table, ActivationKeyTableName),
+    odbc_query(
         Connection,
-        'SELECT activation_key from ~w JOIN ~w ON ~w.id = ~w.user_id' -[ActivationKeyTableName,
-                                                                        UserTableName,
-                                                                        UserTableName,
-                                                                        ActivationKeyTableName],
+        'SELECT activation_key from ~w JOIN ~w ON ~w.id = ~w.user_id WHERE  ~w.name = \'~w\'' -
+             [ActivationKeyTableName,
+              UserTableName,
+              UserTableName,
+              ActivationKeyTableName,
+              UserTableName,
+              UName],
         row(ActivationKey)
     ).
-
-user_property_(UName, Property) :-
-    \+ member(Property, [password_hash(_), email(_), role(_), activation_key(_)]).
-    % TODO complete this predicate
+user_property_(Connection, UName, Property) :-
+    \+ member(Property, [password_hash(_), email(_), role(_), activation_key(_)]),
+    login_use_user_sql(Property),
+    !,
+    login_user_sql(Connection, UName, Property).
+user_property_(Connection, UName, Property) :-
+    setting(identity:postgres_user_table, UserTableName),
+    setting(identity:postgres_etcetera_table, EtceteraTableName),
+    odbc_query(
+        Connection,
+        'SELECT prop from ~w JOIN ~w ON ~w.id = ~w.user_id WHERE  ~w.name = \'~w\'' -
+             [EtceteraTableName,
+              UserTableName,
+              UserTableName,
+              EtceteraTableName,
+              UserTableName,
+              UName],
+        row(PropString)
+    ),
+    text_to_string(PropString, PropS),
+    term_string(Property, PropS).
 
 %!  set_user_property(+UName:string, +Property:acyclic) is det
 %
