@@ -18,6 +18,9 @@
 %
 %  succeeds if we can connect to the database and the tables are set-up. If they
 %  aren't, you can call do_setup_database/0 to create the right tables.
+%
+%  @throws if the database can't be connected to
+%
 database_is_set_up :-
     setting(identity:odbc_name, OdbcName),
     odbc_connect(OdbcName, Connection, []),

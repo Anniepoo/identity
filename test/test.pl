@@ -17,18 +17,20 @@
 user:file_search_path(library, '../prolog').
 
 :- use_module(library(identity/identity)).
-:- use_module(library(identity/login_database), [use_default_db/0,
+:- use_module(library(identity/login_database), [start_db/0,
                                                 current_user//0,
                                                 retractall_user_property/2]).
 :- use_module(library(identity/login_static)).
 
 :- use_module(library(settings)).
 
+:- use_module(library(identity/store/persistency/login_persistency)).
+
 go :-
     load_settings('settings.db'),
     current_prolog_flag(version, X),
     X >= 80100,
-    use_default_db,
+    start_db,
     http_set_session_options(
         [ create(noauto),
           timeout(1800)  % half hour sessions
