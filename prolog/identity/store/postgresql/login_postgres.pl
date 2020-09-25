@@ -93,15 +93,15 @@ do_setup_database :-
       password_hash varchar(256),\c
       email varchar(256))' -[UserTableName]),
     odbc_query(Connection, 'CREATE TABLE ~w (\c
-      user_name varchar(256) PRIMARY KEY,\c
+      user_name varchar(256),\c
       role varchar(256),\c
       FOREIGN KEY (user_name) REFERENCES ~w(user_name))' -[RoleTableName, UserTableName]),
     odbc_query(Connection, 'CREATE TABLE ~w (
-      user_name varchar(256) PRIMARY KEY,\c
+      user_name varchar(256),\c
       activation_key varchar(256),\c
       FOREIGN KEY (user_name) REFERENCES ~w(user_name))' -[ActivationKeyTableName, UserTableName]),
     odbc_query(Connection, 'CREATE TABLE ~w (
-      user_name varchar(256) PRIMARY KEY,\c
+      user_name varchar(256),\c
       functor varchar(256),\c
       prop text,\c
       FOREIGN KEY (user_name) REFERENCES ~w(user_name))' -[EtceteraTableName, UserTableName]),
