@@ -38,7 +38,6 @@ database_is_set_up :-
                 UserField),
             UserFields),
     permutation(UserFields, [
-                    row(UserTableName,id,integer),
                     row(UserTableName,user_name,'character varying'),
                     row(UserTableName,password_hash,'character varying'),
                     row(UserTableName,email,'character varying')]),
@@ -50,8 +49,7 @@ database_is_set_up :-
                 RoleField),
             RoleFields),
     permutation(RoleFields, [
-                    row(RoleTableName,id,integer),
-                    row(RoleTableName,user_id,integer),
+                    row(RoleTableName,user_name,'character varying'),
                     row(RoleTableName,role,'character varying')]),
     findall(ActivationKeyField,
             odbc_query(
@@ -61,8 +59,7 @@ database_is_set_up :-
                 ActivationKeyField),
             ActivationKeyFields),
     permutation(ActivationKeyFields, [
-                    row(ActivationKeyTableName,id,integer),
-                    row(ActivationKeyTableName,user_id,integer),
+                    row(ActivationKeyTableName,user_name,'character varying'),
                     row(ActivationKeyTableName,activation_key,'character varying')]),
     findall(EtceteraField,
             odbc_query(
@@ -72,8 +69,7 @@ database_is_set_up :-
                 EtceteraField),
             EtceteraFields),
     permutation(EtceteraFields, [
-                    row(EtceteraTableName,id,integer),
-                    row(EtceteraTableName,user_id,integer),
+                    row(EtceteraTableName,user_name,'character varying'),
                     row(EtceteraTableName,functor,'character varying'),
                     row(EtceteraTableName,prop,text)]),
     odbc_disconnect(Connection).
@@ -93,26 +89,22 @@ do_setup_database :-
     setting(identity:postgres_activation_key_table, ActivationKeyTableName),
     setting(identity:postgres_etcetera_table, EtceteraTableName),
     odbc_query(Connection, 'CREATE TABLE ~w (\c
-      id SERIAL PRIMARY KEY,\c
-      user_name varchar(256),\c
+      user_name varchar(256) PRIMARY KEY,\c
       password_hash varchar(256),\c
       email varchar(256))' -[UserTableName]),
     odbc_query(Connection, 'CREATE TABLE ~w (\c
-      id SERIAL PRIMARY KEY,\c
-      user_id int,\c
+      user_name varchar(256) PRIMARY KEY,\c
       role varchar(256),\c
-      FOREIGN KEY (user_id) REFERENCES ~w(id))' -[RoleTableName, UserTableName]),
+      FOREIGN KEY (user_name) REFERENCES ~w(user_name))' -[RoleTableName, UserTableName]),
     odbc_query(Connection, 'CREATE TABLE ~w (
-      id SERIAL PRIMARY KEY,\c
-      user_id int,\c
+      user_name varchar(256) PRIMARY KEY,\c
       activation_key varchar(256),\c
-      FOREIGN KEY (user_id) REFERENCES ~w(id))' -[ActivationKeyTableName, UserTableName]),
+      FOREIGN KEY (user_name) REFERENCES ~w(user_name))' -[ActivationKeyTableName, UserTableName]),
     odbc_query(Connection, 'CREATE TABLE ~w (
-      id SERIAL PRIMARY KEY,\c
-      user_id int,\c
+      user_name varchar(256) PRIMARY KEY,\c
       functor varchar(256),\c
       prop text,\c
-      FOREIGN KEY (user_id) REFERENCES ~w(id))' -[EtceteraTableName, UserTableName]),
+      FOREIGN KEY (user_name) REFERENCES ~w(user_name))' -[EtceteraTableName, UserTableName]),
     odbc_disconnect(Connection).
 
 login_database:start_db :-
@@ -163,31 +155,17 @@ user_property_(Connection, UName, email(Email)) :-
         row(Email)
     ).
 user_property_(Connection, UName, role(Role)) :-
-    setting(identity:postgres_user_table, UserTableName),
     setting(identity:postgres_role_table, RoleTableName),
     odbc_query(
         Connection,
-        'SELECT role from ~w JOIN ~w ON ~w.id = ~w.user_id WHERE ~w.name = \'~w\''-[
-                          RoleTableName,
-                          UserTableName,
-                          UserTableName,
-                          RoleTableName,
-                          UserTableName,
-                          UName],
-    row(Role)
+        'SELECT role from ~w WHERE name = \'~w\''-[RoleTableName, UName],
+        row(Role)
     ).
 user_property_(Connection, UName, activation_key(ActivationKey)) :-
-    setting(identity:postgres_user_table, UserTableName),
     setting(identity:postgres_activation_key_table, ActivationKeyTableName),
     odbc_query(
         Connection,
-        'SELECT activation_key from ~w JOIN ~w ON ~w.id = ~w.user_id WHERE  ~w.name = \'~w\'' -
-             [ActivationKeyTableName,
-              UserTableName,
-              UserTableName,
-              ActivationKeyTableName,
-              UserTableName,
-              UName],
+        'SELECT activation_key from ~w WHERE name = \'~w\'' -[ActivationKeyTableName, UName],
         row(ActivationKey)
     ).
 user_property_(Connection, UName, Property) :-
@@ -196,17 +174,10 @@ user_property_(Connection, UName, Property) :-
     !,
     login_user_sql(Connection, UName, Property).
 user_property_(Connection, UName, Property) :-
-    setting(identity:postgres_user_table, UserTableName),
     setting(identity:postgres_etcetera_table, EtceteraTableName),
     odbc_query(
         Connection,
-        'SELECT prop from ~w JOIN ~w ON ~w.id = ~w.user_id WHERE  ~w.name = \'~w\'' -
-             [EtceteraTableName,
-              UserTableName,
-              UserTableName,
-              EtceteraTableName,
-              UserTableName,
-              UName],
+        'SELECT prop from ~w WHERE name = \'~w\'' - [EtceteraTableName, UName],
         row(PropString)
     ),
     text_to_string(PropString, PropS),
@@ -235,7 +206,7 @@ login_database:set_user_property(UName, Property) :-
     ).
 
 % TODO complete this
-user_property_(Connection, UName, password_hash(PasswordHash)) :-
+set_user_property_(Connection, UName, password_hash(PasswordHash)) :-
     setting(identity:postgres_user_table, UserTableName),
     odbc_query(
         Connection,
