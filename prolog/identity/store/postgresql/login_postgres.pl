@@ -205,12 +205,12 @@ login_database:set_user_property(UName, Property) :-
         )
     ).
 
-% TODO complete this
+% TODO This is wide open to sql injections. Validate the data before this point.
 set_user_property_(Connection, UName, password_hash(PasswordHash)) :-
     setting(identity:postgres_user_table, UserTableName),
     odbc_query(
         Connection,
-        'SELECT password_hash from ~w WHERE user_name = \'~w\'' -[UserTableName, UName],
+        'INSERT INTO ~w (user_name, password_hash) ON CONFLICT (user_name) DO UPDATE SET passord_hash = \'~w\';' -[UserTableName, PasswordHash],
         row(PasswordHash)
     ).
 
