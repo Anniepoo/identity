@@ -8,6 +8,7 @@
 */
 
 :- use_module(library(settings)).
+:- use_module(library(identity/login_database)).
 
 :- setting(identity:odbc_name, atom, swipl, "The name of the odbc connection in odbc.ini").
 :- setting(identity:postgres_user_table, atom, users, "User table name in the database").
@@ -89,3 +90,117 @@ do_setup_database :-
       activation_key varchar(256),\c
       FOREIGN KEY (user_id) REFERENCES ~w(id))' -[ActivationKeyTableName, UserTableName]),
     odbc_disconnect(Connection).
+
+login_database:start_db :-
+    database_is_set_up.
+
+%!  user_property(?UName, ?Property) is nondet
+%
+%   True when Property is a property of user.
+%
+login_database:user_property(UName, Property) :-
+    with_mutex
+    (
+        login_database,
+        setup_call_cleanup
+        (
+            (
+                setting(identity:odbc_name, OdbcName),
+                odbc_connect(OdbcName, Connection, [])
+            ),
+            (
+                user_property_(Connection, UName, Property)
+            ),
+            (
+                odbc_disconnect(Connection)
+            )
+        )
+    ).
+
+%!  user_passwordHash(?UName, -PasswordHash) is nondet
+%
+%   True when Property is a property of user.
+%
+user_property_(Connection, UName, password_hash(PasswordHash)) :-
+    setting(identity:postgres_user_table, UserTableName),
+    odbc_query
+    (
+        Connection,
+        'SELECT password_hash from ~w WHERE user_name = \'~w\'' -[UserTableName, UName],
+        row(PasswordHash)
+    ).
+user_property_(Connection, UName, email(Email)) :-
+    setting(identity:postgres_user_table, UserTableName),
+    odbc_query
+    (
+        Connection,
+        'SELECT email from ~w WHERE user_name = \'~w\'' -[UserTableName, UName],
+        row(Email)
+    ).
+user_property_(Connection, UName, role(Role)) :-
+    setting(identity:postgres_user_table, UserTableName),
+    setting(identity:postgres_user_table, RoleTableName),
+    odbc_query
+    (
+        Connection,
+        'SELECT role from ~w JOIN ~w ON ~w.id = ~w.user_id' -[RoleTableName,
+                                                              UserTableName,
+                                                              UserTableName,
+                                                              RoleTableName],
+        row(Role)
+    ).
+user_property_(Connection, UName, activation_key(ActivationKey)) :-
+    setting(identity:postgres_user_table, UserTableName),
+    setting(identity:postgres_user_table, ActivationKeyTableName),
+    odbc_query
+    (
+        Connection,
+        'SELECT activation_key from ~w JOIN ~w ON ~w.id = ~w.user_id' -[ActivationKeyTableName,
+                                                                        UserTableName,
+                                                                        UserTableName,
+                                                                        ActivationKeyTableName],
+        row(ActivationKey)
+    ).
+
+user_property_(UName, Property) :-
+    \+ member(Property, [password_hash(_), email(_), role(_), activation_key(_)]).
+    % TODO complete this predicate
+
+%!  set_user_property(+UName:string, +Property:acyclic) is det
+%
+%   sets the singleton property in database by class,
+%   where class is signature
+%
+
+%!  assert_user_property(+UName:string, +Property:acyclic) is det
+%
+%   adds a property
+%
+
+
+%!  retract_user_property(+UName:string, +Property:acyclic) is det
+%
+%   removes a single instance of a property
+%   (normally not what you want, use retractall unless you're using
+%   multiset property)
+%
+
+%!  retract_user_property(+UName:string, +Property:acyclic) is det
+%
+%   removes a single instance of a property
+%   (normally not what you want, use retractall unless you're using
+%   multiset property)
+%
+
+
+%!  retractall_user_property(+UName:string, +Property:acyclic) is det
+%
+%   removes all instances of a property
+%
+
+
+%!  start_db_expansion is det
+%
+%   call at startup to give the storage method a chance to
+%   start up. May fail or throw if the db isn't able to start up
+%

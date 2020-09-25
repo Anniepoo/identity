@@ -100,9 +100,7 @@ current_user_property(Prop) :-
 
 %!  user_property(?UName, ?Property) is nondet
 %
-%   True when Property is a property of user. In a real application this
-%   should of course be  a  proper   persistent  database  and passwords
-%   should be properly hashed.
+%   True when Property is a property of user.
 %
 
 %!  set_user_property(+UName:string, +Property:acyclic) is det

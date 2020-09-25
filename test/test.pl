@@ -24,12 +24,18 @@ user:file_search_path(library, '../prolog').
 
 :- use_module(library(settings)).
 
-:- use_module(library(identity/store/persistency/login_persistency)).
+:- use_module(library(identity/store/postgresql/login_postgres)).
 
 go :-
     load_settings('settings.db'),
     current_prolog_flag(version, X),
     X >= 80100,
+    go2.
+go :-
+    writeln('Need to be on SWI-Prolog 8.1.0 or better, you are on'),
+    version.
+
+go2 :-
     start_db,
     http_set_session_options(
         [ create(noauto),
@@ -40,9 +46,8 @@ go :-
           %                ])
         ]),
     http_server(http_dispatch, [port(5000)]).
-go :-
-    writeln('Need to be on SWI-Prolog 8.1.0 or better, you are on'),
-    version.
+go2 :-
+    writeln('We could not start the database').
 
 :- http_handler(root(.), root_handler, [id(home)]).
 :- http_handler(root(secret), secret_handler, [id(secret), role(user)]).
