@@ -126,16 +126,16 @@ login_form_page -->
     html(\login_form([
               \login_hidden_referer,
               div(\login_reason),
-              div(\login_register_link),
               \login_warning,
               div([label(for(uname), \local('User Name:')),
                    \login_user_name_field]),
               div([label(for(passwd), \local('Password:')),
                    \login_password_field]),
-              div([\login_remember_me_check, \local('Remember me')]),
-              div(\login_forgot_password),
-              div(\login_submit),
-              div(\login_remember_submit)
+    %          div([\login_remember_me_check, \local('Remember me')]),
+    %          div(\login_forgot_password),
+    %          div(\login_submit),
+              div(\login_remember_submit),
+              div(\login_register_link)
           ])).
 
 login_register_link -->
