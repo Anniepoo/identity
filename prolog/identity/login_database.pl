@@ -1,8 +1,4 @@
 :- module(login_database, [
-          authenticate_user/3,
-          add_user/3,
-          current_user/1,
-          current_user//0,
           use_default_db/0,
           user_property/2,
           set_user_property/2,
@@ -10,52 +6,6 @@
           retract_user_property/2,
           retractall_user_property/2
           ]).
-% TODO document all 'known' properties
-% eg password_hash, role
-%
-:- use_module(library(http/http_session)).
-:- use_module(library(http/html_write)).
-:- use_module(library(identity/login_crypto)).
-:- use_module(library(identity/customize)).
-:- use_module(library(identity/login_email)).
-
-authenticate_user(UName, Password, ok) :-
-    user_property(UName, password_hash(Hash)),
-    password_hash(Password, Hash), % test requires both ground
-    !.
-authenticate_user(UName, _, IUOP) :-
-    local('Invalid user or password', IUOP), % for security, same as next
-    user_property(UName, _),
-    !.
-authenticate_user(_, _, IUOP) :-
-    local('Invalid user or password', IUOP).
-
-% TODO this can fail - probably not handled
-% % TODO decide - should it throw?
-% TODO - handle attempt to add user when they exist
-% gracefully
-add_user(UName, Password, Email) :-
-    \+ user_property(UName, _),
-    password_hash(Password, Hash),
-    set_user_property(UName, password_hash(Hash)),
-    set_user_property(UName, email(Email)),
-    setting(identity:require_activation_email, ActivateEmail),
-    (   ActivateEmail = true
-    ->  assert_user_property(UName, role(needs_activation)),
-        uuid(Key),
-        assert_user_property(UName, activation_key(Key)),
-        send_activation_email(UName, Email, Key)
-    ;   assert_user_property(UName, role(user))
-    ).
-
-current_user(UName) :-
-    http_session_data(user(UName)).
-current_user(guest).
-
-current_user -->
-    { current_user(UName) },
-    html(UName).
-
 
 		 /*******************************
 		 *            USER DATA		*

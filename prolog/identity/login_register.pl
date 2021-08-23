@@ -35,8 +35,6 @@ register_form -->
              [
                  div(\login_warning),
                  \login_hidden_referer,
-                 div([id(emailwarn), class(warning)], &(nbsp)),
-                 div([label(for(email), \local('Email:')), \login_email]),
                  div([id(unamewarn), class(warning)], &(nbsp)),
                  div([label(for(uname), \local('User name:')),
                             \register_user_name_field]),

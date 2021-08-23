@@ -16,11 +16,6 @@
 :- setting(identity:constraints,
            dict,
     _{
-        email: _{ min: 4,
-                  max: 128,
-                  regex: '^[A-Za-z0-9\\-_\\+\\.]+@(([A-Za-z0-9\\-_\\+]+)\\.)+[A-Za-z0-9]+$',
-                  warn: 'Must be a valid email address'
-                },
         uname: _{ min: 4,
                   max: 128,
                   regex: '^[A-Za-z0-9\\-_\\+\\.]+$',
